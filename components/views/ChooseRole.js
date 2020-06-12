@@ -1,42 +1,48 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ImageBackground } from 'react-native';
 import { Text, Avatar, Icon } from 'react-native-elements';
 import { Link } from '../../react-router.native';
 
 export default () => (
-	<View style={styles.container}>
-		<View style={styles.headerContainer}>
-			<Link to="/login">
-				<Icon name="arrow-back" color="#fff" />
-			</Link>
-		</View>
-		<View style={styles.content}>
-			<View style={styles.titleContainer}>
-				<Text style={styles.title}>Choose your role</Text>
+	<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack}>
+		<View style={styles.container}>
+			<View style={styles.headerContainer}>
+				<Link to="/login">
+					<Icon name="arrow-back" color="#fff" />
+				</Link>
 			</View>
+			<View style={styles.content}>
+				<View style={styles.titleContainer}>
+					<Text style={styles.title}>Choose your role</Text>
+				</View>
 
-			<View style={styles.selectContainer}>
-				<View style={styles.Select}>
-					<Avatar
-						size="medium"
-						overlayContainerStyle={styles.avatarStyle}
-						rounded
-						icon={{ name: 'person' }}
-					/>
-					<Text style={styles.textWhite}>Teacher</Text>
-					<Icon name="expand-more" color="#ccc" containerStyle={styles.arrowIcon} />
+				<View style={styles.selectContainer}>
+					<View style={styles.Select}>
+						<Avatar
+							size="medium"
+							overlayContainerStyle={styles.avatarStyle}
+							rounded
+							icon={{ name: 'person' }}
+						/>
+						<Text style={styles.textWhite}>Teacher</Text>
+						<Icon name="expand-more" color="#ccc" containerStyle={styles.arrowIcon} />
+					</View>
 				</View>
 			</View>
 		</View>
-	</View>
+	</ImageBackground>
 );
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		alignItems: 'center',
-		backgroundColor: '#359a9a',
-		padding: 10,
+		flexDirection: "column"
+	},
+	imageBack: {
+		flex: 1,
+		resizeMode: "cover",
+		justifyContent: "center",
+		height: 700
 	},
 	content: {
 		height: '85%',
