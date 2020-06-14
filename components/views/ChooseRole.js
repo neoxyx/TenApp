@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, ImageBackground } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import { Text, Icon } from 'react-native-elements';
+import { Text, Icon, Avatar } from 'react-native-elements';
 import { Dropdown } from 'react-native-material-dropdown';
 import { Link } from '../../react-router.native';
 
@@ -49,7 +49,9 @@ export default class ChooseRole extends Component {
 							<View style={styles.titleContainer}>
 								<Text style={styles.title}>Choose your role</Text>
 							</View>
-							<Dropdown data={items} itemTextStyle={styles.textWhite} fontSize={18} pickerStyle={{ backgroundColor: 'transparent' }} baseColor={'white'} containerStyle={styles.select} textColor={'white'} itemColor={'white'} onChangeText={(value) => this.setSelectedStateValue(value)} />
+							<View style={styles.selectContainer}>
+								<Dropdown label={'Choose your role'} data={items} itemTextStyle={styles.textWhite} fontSize={18} pickerStyle={{ backgroundColor: 'transparent' }} baseColor={'white'} containerStyle={styles.select} textColor={'white'} itemColor={'white'} onChangeText={(value) => this.setSelectedStateValue(value)} />
+							</View>
 						</View>
 					</View>
 				</ImageBackground>
@@ -106,6 +108,16 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-around',
 		alignContent: 'center',
 		flexWrap: 'wrap',
+	},
+	Select: {
+		width: '100%',
+		borderRadius: 3,
+		borderColor: '#fff',
+		borderWidth: 3,
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		position: 'relative',
 	},
 	selectStart: {
 		display: 'flex',
