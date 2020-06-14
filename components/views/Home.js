@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, ImageBackground, AsyncStorage, Alert } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import { Text } from 'react-native-elements';
+import { Text, Icon } from 'react-native-elements';
 import { Link } from '../../react-router.native';
 import Api from '../../constans/Api';
 
@@ -61,22 +61,10 @@ export default class Home extends Component {
 			return (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack}>
 					<View style={styles.container}>
-						<View style={styles.headerContainer}>
-							<Link to="/login">
-								<Text style={styles.textWhite}>Logout</Text>
-							</Link>
-						</View>
-						<View style={styles.homeContainer}>
+						<View style={styles.content}>
 							<View style={styles.titleContainer}>
-								<Text h3 style={styles.textWhite}>
-									Home
-								</Text>
-								<Text h3 style={styles.textWhite}>
-									{this.state.first_name}
-								</Text>
-								<Text h3 style={styles.textWhite}>
-									{this.state.last_name}
-								</Text>
+								<Icon name="home" color="gray" />
+								<Text style={styles.textGray}>Incoming Dashboard</Text>
 							</View>
 						</View>
 					</View>
@@ -93,23 +81,38 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: "column"
 	},
+	content: {
+		height: '85%',
+		flexDirection: 'row',
+		display: 'flex',
+		width: '90%',
+		justifyContent: 'space-around',
+		alignContent: 'center',
+		flexWrap: 'wrap',
+		paddingLeft: 30,
+	},
+	titleContainer: {
+		width: '100%'
+	},
 	imageBack: {
 		flex: 1,
 		resizeMode: "cover",
-		justifyContent: "center",
 		height: 700
 	},
 	headerContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		alignItems: 'center',
-		height: '5%',
+		height: '50%',
 		width: '100%',
 		paddingHorizontal: 10,
 	},
 	textWhite: {
 		color: '#fff',
+		fontFamily: 'Roboto-Regular'
+	},
+	textGray: {
+		color: 'gray',
 		fontFamily: 'Roboto-Regular'
 	},
 	homeContainer: {

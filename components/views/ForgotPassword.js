@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ImageBackground } from 'react-native';
+import { View, StyleSheet, ImageBackground, Alert } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Text, Input, Icon } from 'react-native-elements';
 import { Link } from '../../react-router.native';
 import { button as Button } from '../elements/Button';
+import Api from '../../constans/Api';
 
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
@@ -13,15 +14,44 @@ let customFonts = {
 }
 
 export default class ForgotPassword extends Component {
-	state = {
-		fontsLoaded: false,
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			center: '',
+			username: '',
+			fontsLoaded: false,
+		}
+	}
 	async _loadFontAsync() {
 		await Font.loadAsync(customFonts);
 		this.setState({ fontsLoaded: true });
 	}
 	componentDidMount() {
 		this._loadFontAsync();
+	}
+	onSendRecoveryPass = () => {
+		const { center, username } = this.state;
+		let dataRecovery = {
+			method: 'POST',
+			body: JSON.stringify({
+				center: center,
+				username: username,
+				link: 'http://linkrecovery.com'
+			}),
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			}
+		}
+
+		fetch(Api.url + 'auth/forgot-password', dataRecovery)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				Alert.alert(responseJson.message);
+			})
+			.catch((error) => {
+				Alert.alert(error);
+			});
 	}
 	render() {
 		if (this.state.fontsLoaded) {
@@ -42,15 +72,15 @@ export default class ForgotPassword extends Component {
 							</View>
 
 							<View style={styles.componentContainer}>
-								<Input placeholder="TEN CENTER" inputContainerStyle={styles.input} inputStyle={styles.input} />
+								<Input value={this.state.center} onChangeText={(center) => this.setState({ center })} placeholder="TEN CENTER" inputContainerStyle={styles.input} inputStyle={styles.input} />
 							</View>
 
 							<View style={styles.componentContainer}>
-								<Input placeholder="EMAIL ADDRESS" inputContainerStyle={styles.input} inputStyle={styles.input} />
+								<Input value={this.state.username} onChangeText={(username) => this.setState({ username })} placeholder="EMAIL ADDRESS" inputContainerStyle={styles.input} inputStyle={styles.input} />
 							</View>
 
 							<View style={styles.buttonContainer}>
-								<Button buttonStyle={styles.button} title="Send Recovery Link" />
+								<Button buttonStyle={styles.button} title="Send Recovery Link" onPress={this.onSendRecoveryPass} />
 							</View>
 						</View>
 					</View>
