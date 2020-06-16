@@ -31,11 +31,14 @@ export default class ChooseRole extends Component {
 		this.setState({ ddlSelectedValue: ddlValue });
 	}
 	render() {
-		let items = [{
-			value: 'Teacher',
-		}, {
-			value: 'Parent',
-		}]
+		let items = [
+			{
+				value: 'Teacher',
+			},
+			{
+				value: 'Parent',
+			}
+		]
 		if (this.state.fontsLoaded) {
 			return (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack}>

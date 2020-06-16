@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, ImageBackground } from 'react-native';
+import { View, StyleSheet, Image, ImageBackground, AsyncStorage, Alert } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Text, Icon } from 'react-native-elements';
@@ -8,9 +8,20 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Api from '../../constans/Api';
+import { DrawerContent } from './DrawerContent';
+
+let customFonts = {
+	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
+	'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
+	'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
+}
 
 const DashboardStack = createStackNavigator();
 const DropOffStack = createStackNavigator();
+const PickUpStack = createStackNavigator();
+const HistoryStack = createStackNavigator();
+const MoreStack = createStackNavigator();
+const SettingsStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 const ScreenContainer = ({ children }) => (
 	<View style={styles.container}></View>
@@ -30,8 +41,7 @@ const DashboardStackScreen = ({ navigation }) => (
 			),
 			headerStyle: { backgroundColor: '#399998' },
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()}
-					title="Menu" />
+				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -54,8 +64,7 @@ const DropOffStackScreen = ({ navigation }) => (
 			headerStyle: { backgroundColor: '#399998' },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()}
-					title="Menu" />
+				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -63,13 +72,98 @@ const DropOffStackScreen = ({ navigation }) => (
 		}} />
 	</DropOffStack.Navigator>
 );
-export const Profile = () => {
-	return (
-		<ScreenContainer>
-			<Text>Profile</Text>
-		</ScreenContainer>
-	);
-}
+export const PickUp = () => (
+	<ScreenContainer>
+		<Text></Text>
+	</ScreenContainer>
+);
+const PickUpStackScreen = ({ navigation }) => (
+	<PickUpStack.Navigator>
+		<PickUpStack.Screen name="Pickup" component={PickUp} options={{
+			headerTintColor: 'white',
+			headerBackground: () => (
+				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
+			),
+			headerStyle: { backgroundColor: '#399998' },
+			headerBackTitleVisible: false,
+			headerLeft: (props) => (
+				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+			),
+			headerRight: () => (
+				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+			)
+		}} />
+	</PickUpStack.Navigator>
+);
+export const History = () => (
+	<ScreenContainer>
+		<Text></Text>
+	</ScreenContainer>
+);
+const HistoryStackScreen = ({ navigation }) => (
+	<HistoryStack.Navigator>
+		<HistoryStack.Screen name="History" component={History} options={{
+			headerTintColor: 'white',
+			headerBackground: () => (
+				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
+			),
+			headerStyle: { backgroundColor: '#399998' },
+			headerBackTitleVisible: false,
+			headerLeft: (props) => (
+				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+			),
+			headerRight: () => (
+				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+			)
+		}} />
+	</HistoryStack.Navigator>
+);
+export const More = () => (
+	<ScreenContainer>
+		<Text></Text>
+	</ScreenContainer>
+);
+const MoreStackScreen = ({ navigation }) => (
+	<MoreStack.Navigator>
+		<MoreStack.Screen name="More" component={More} options={{
+			headerTintColor: 'white',
+			headerBackground: () => (
+				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
+			),
+			headerStyle: { backgroundColor: '#399998' },
+			headerBackTitleVisible: false,
+			headerLeft: (props) => (
+				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+			),
+			headerRight: () => (
+				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+			)
+		}} />
+	</MoreStack.Navigator>
+);
+export const Settings = () => (
+	<ScreenContainer>
+		<Text></Text>
+	</ScreenContainer>
+);
+const SettingsStackScreen = ({ navigation }) => (
+	<SettingsStack.Navigator>
+		<SettingsStack.Screen name="Settings" component={Settings} options={{
+			headerTintColor: 'white',
+			headerBackground: () => (
+				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
+			),
+			headerStyle: { backgroundColor: '#399998' },
+			headerBackTitleVisible: false,
+			headerLeft: (props) => (
+				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+			),
+			headerRight: () => (
+				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+			)
+		}} />
+	</SettingsStack.Navigator>
+);
 const TabsScreen = () => (
 	<Tabs.Navigator tabBarOptions={{
 		activeTintColor: 'gray',
@@ -86,22 +180,62 @@ const TabsScreen = () => (
 		<Tabs.Screen name="DropOff" component={DropOffStackScreen} options={{
 			tabBarLabel: 'DropOff',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="list" color={color} size={size} />
+				<Icon name="child-care" color={color} size={size} />
+			),
+		}} />
+		<Tabs.Screen name="Pickup" component={PickUpStackScreen} options={{
+			tabBarLabel: 'Pickup',
+			tabBarIcon: ({ color, size }) => (
+				<Icon name="directions-car" color={color} size={size} />
+			),
+		}} />
+		<Tabs.Screen name="History" component={HistoryStackScreen} options={{
+			tabBarLabel: 'History',
+			tabBarIcon: ({ color, size }) => (
+				<Icon name="history" color={color} size={size} />
+			),
+		}} />
+		<Tabs.Screen name="More" component={MoreStackScreen} options={{
+			tabBarLabel: 'More',
+			tabBarIcon: ({ color, size }) => (
+				<Icon name="more-horiz" color={color} size={size} />
+			),
+		}} />
+		<Tabs.Screen name="Settings" component={SettingsStackScreen} options={{
+			tabBarLabel: 'Settings',
+			tabBarIcon: ({ color, size }) => (
+				<Icon name="settings" color={color} size={size} />
 			),
 		}} />
 	</Tabs.Navigator>
 );
 const Drawer = createDrawerNavigator();
 export default class Home extends Component {
+	state = {
+		fontsLoaded: false
+	};
+	async _loadFontAsync() {
+		await Font.loadAsync(customFonts);
+		this.setState({ fontsLoaded: true });
+	}
+	componentDidMount() {
+		this._loadFontAsync();
+	}
+
 	render() {
-		return (
-			<NavigationContainer>
-				<Drawer.Navigator>
-					<Drawer.Screen name="Dashboard" component={TabsScreen} />
-					<Drawer.Screen name="Profile" component={Profile} />
-				</Drawer.Navigator>
-			</NavigationContainer>
-		);
+		if (this.state.fontsLoaded) {
+			return (
+				<NavigationContainer>
+					<Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
+						<Drawer.Screen name="Dashboard" component={TabsScreen} />
+					</Drawer.Navigator>
+				</NavigationContainer>
+			);
+		} else {
+			return (
+				<AppLoading />
+			)
+		}
 	}
 }
 
@@ -126,7 +260,7 @@ const styles = StyleSheet.create({
 	imageBack: {
 		flex: 1,
 		resizeMode: "cover",
-		height: 60
+		height: 80
 	},
 	headerContainer: {
 		display: 'flex',
@@ -158,4 +292,10 @@ const styles = StyleSheet.create({
 		width: 75,
 		height: 30,
 	},
+	profileImg: {
+		width: 80,
+		height: 80,
+		borderRadius: 40,
+		marginTop: 20
+	}
 });

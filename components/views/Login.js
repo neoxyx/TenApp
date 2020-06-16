@@ -7,7 +7,7 @@ import { Link } from '../../react-router.native';
 import { button as Button } from '../elements/Button';
 import Api from '../../constans/Api';
 import { Redirect } from 'react-router-dom';
-
+import { Picker } from '@react-native-community/picker';
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
 	'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
@@ -23,6 +23,7 @@ export default class Login extends Component {
 			password: '',
 			st: false,
 			fontsLoaded: false,
+			centers: [],
 		}
 	}
 
@@ -31,10 +32,16 @@ export default class Login extends Component {
 		this.setState({ fontsLoaded: true });
 	}
 
-	componentDidMount = () => {
-		this._loadFontAsync();
+	GetCentersData = () => {
+		fetch(Api.url + 'api/daycare')
+			.then(response => response.json())
+			.then(json => { this.setState({ centers: json }) })
 	}
 
+	componentDidMount = () => {
+		this.GetCentersData();
+		this._loadFontAsync();
+	}
 	async storeToken(userToken) {
 		try {
 			await AsyncStorage.setItem("token", JSON.stringify(userToken));
@@ -61,13 +68,18 @@ export default class Login extends Component {
 		fetch(Api.url + 'auth/login', dataLogin)
 			.then((response) => response.json())
 			.then((responseJson) => {
-				this.storeToken(responseJson.token);
-				this.setState({ st: true });
+				if (responseJson.token !== undefined) {
+					this.storeToken(responseJson.token)
+					this.setState({ st: true });
+				} else {
+					Alert.alert('Debes ingresar datos validas en todos los campos');
+				}
 			})
 			.catch((error) => {
 				Alert.alert(error);
 			});
 	}
+
 
 	render() {
 		const { st } = this.state;
@@ -75,6 +87,11 @@ export default class Login extends Component {
 			return <Redirect to={'/home'} />
 		}
 		if (this.state.fontsLoaded) {
+			let myCenters = this.state.centers.map((myValue, myIndex) => {
+				return (
+					<Picker.Item label={myValue.name} value={myValue.name} key={myIndex} />
+				)
+			})
 			return (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack}>
 					<View style={styles.container}>
@@ -94,7 +111,10 @@ export default class Login extends Component {
 							</View>
 
 							<View style={styles.componentContainer}>
-								<Input value={this.state.center} type="text" placeholder="TEN CENTER" onChangeText={(center) => this.setState({ center })} inputContainerStyle={styles.input} inputStyle={styles.input} />
+								<Picker style={styles.select} selectedValue={this.state.center} onValueChange={(value) => this.setState({ center: value })} >
+									<Picker.Item label="CHOOSE CENTER" />
+									{myCenters}
+								</Picker>
 							</View>
 
 							<View style={styles.componentContainer}>
@@ -179,5 +199,11 @@ const styles = StyleSheet.create({
 	input: {
 		color: '#fff',
 		borderColor: '#fff',
-	}
+	},
+	select: {
+		width: '98%',
+		paddingLeft: 10,
+		color: '#fff',
+		borderBottomColor: '#fff',
+	},
 });
