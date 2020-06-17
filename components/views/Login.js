@@ -107,7 +107,7 @@ export default class Login extends Component {
 							<View style={styles.titleContainer}>
 								<Text h3 style={styles.textWhite}>
 									Log in
-						</Text>
+								</Text>
 							</View>
 
 							<View style={styles.componentContainer}>

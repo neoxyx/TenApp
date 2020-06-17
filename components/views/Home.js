@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Image, ImageBackground, AsyncStorage, Alert } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import { Text, Icon } from 'react-native-elements';
+import { Icon, Card, Text, ListItem } from 'react-native-elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Api from '../../constans/Api';
 import { DrawerContent } from './DrawerContent';
+import {
+	Avatar
+} from 'react-native-paper';
 
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
@@ -23,15 +26,151 @@ const HistoryStack = createStackNavigator();
 const MoreStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
-const ScreenContainer = ({ children }) => (
-	<View style={styles.container}></View>
-);
 
-export const Dashboard = () => (
-	<ScreenContainer>
-		<Text></Text>
-	</ScreenContainer>
-);
+class Dashboard extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			fontsLoaded: false,
+			coming: [],
+			process: [],
+			registered: []
+		}
+	}
+
+	async _loadFontAsync() {
+		await Font.loadAsync(customFonts);
+		this.setState({ fontsLoaded: true });
+	}
+	async getComing() {
+		let userToken = await AsyncStorage.getItem("token");
+		let data = JSON.parse(userToken);
+		let dataMe = {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'access-token': data
+			}
+		}
+
+		fetch(Api.url + 'api/protocols/1/status/1', dataMe)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({ coming: responseJson });
+			})
+			.catch((error) => {
+				Alert.alert(error);
+			});
+	}
+	async getProcess() {
+		let userToken = await AsyncStorage.getItem("token");
+		let data = JSON.parse(userToken);
+		let dataMe = {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'access-token': data
+			}
+		}
+
+		fetch(Api.url + 'api/protocols/1/status/2', dataMe)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({ process: responseJson });
+			})
+			.catch((error) => {
+				Alert.alert(error);
+			});
+	}
+	async getRegistered() {
+		let userToken = await AsyncStorage.getItem("token");
+		let data = JSON.parse(userToken);
+		let dataMe = {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'access-token': data
+			}
+		}
+
+		fetch(Api.url + 'api/protocols/1/status/3', dataMe)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({ registered: responseJson });
+			})
+			.catch((error) => {
+				Alert.alert(error);
+			});
+	}
+	componentDidMount() {
+		this._loadFontAsync();
+		this.getComing();
+		this.getProcess();
+		this.getRegistered();
+	}
+	render() {
+		return (
+			<View style={styles.container}>
+				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+					<View style={styles.headerContainer}>
+						<Icon name="home" size={38} color="gray" /><Text h3 style={styles.textGray}>Incoming Dashboard</Text>
+					</View>
+				</View>
+				<View>
+					<Card title="Coming">
+						{
+							this.state.coming.map((u, i) => {
+								return (
+									<View key={i} style={styles.headerContainer}>
+										<Avatar.Image
+											source={{ uri: u.child.pucture }}
+											size={50}
+										/>
+										<Text h5 style={{ fontFamily: 'Roboto-Regular', paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
+									</View>
+								);
+							})
+						}
+					</Card>
+					<Card title="In Process">
+						{
+							this.state.process.map((u, i) => {
+								return (
+									<View key={i} style={styles.headerContainer}>
+										<Avatar.Image
+											source={{ uri: u.child.pucture }}
+											size={50}
+										/>
+										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
+									</View>
+								);
+							})
+						}
+					</Card>
+					<Card title="Registered">
+						{
+							this.state.registered.map((u, i) => {
+								return (
+									<View key={i} style={styles.headerContainer}>
+										<Avatar.Image
+											source={{ uri: u.child.pucture }}
+											size={50}
+										/>
+										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
+									</View>
+								);
+							})
+						}
+					</Card>
+				</View>
+			</View >
+		);
+	}
+
+}
 const DashboardStackScreen = ({ navigation }) => (
 	<DashboardStack.Navigator>
 		<DashboardStack.Screen name="Dashboard" component={Dashboard} options={{
@@ -41,7 +180,7 @@ const DashboardStackScreen = ({ navigation }) => (
 			),
 			headerStyle: { backgroundColor: '#399998' },
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -49,11 +188,149 @@ const DashboardStackScreen = ({ navigation }) => (
 		}} />
 	</DashboardStack.Navigator>
 );
-export const DropOff = () => (
-	<ScreenContainer>
-		<Text></Text>
-	</ScreenContainer>
-);
+class DropOff extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			fontsLoaded: false,
+			coming: [],
+			inProcess: [],
+			droppedOff: []
+		}
+	}
+
+	async _loadFontAsync() {
+		await Font.loadAsync(customFonts);
+		this.setState({ fontsLoaded: true });
+	}
+	async getComing() {
+		let userToken = await AsyncStorage.getItem("token");
+		let data = JSON.parse(userToken);
+		let dataMe = {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'access-token': data
+			}
+		}
+
+		fetch(Api.url + 'api/protocols/2/status/1', dataMe)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({ coming: responseJson });
+			})
+			.catch((error) => {
+				Alert.alert(error);
+			});
+	}
+	async getInProcess() {
+		let userToken = await AsyncStorage.getItem("token");
+		let data = JSON.parse(userToken);
+		let dataMe = {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'access-token': data
+			}
+		}
+
+		fetch(Api.url + 'api/protocols/2/status/2', dataMe)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({ inProcess: responseJson });
+			})
+			.catch((error) => {
+				Alert.alert(error);
+			});
+	}
+	async getDroppedOff() {
+		let userToken = await AsyncStorage.getItem("token");
+		let data = JSON.parse(userToken);
+		let dataMe = {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+				'access-token': data
+			}
+		}
+
+		fetch(Api.url + 'api/protocols/2/status/3', dataMe)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({ droppedOff: responseJson });
+			})
+			.catch((error) => {
+				Alert.alert(error);
+			});
+	}
+	componentDidMount() {
+		this._loadFontAsync();
+		this.getComing();
+		this.getInProcess();
+		this.getDroppedOff();
+	}
+	render() {
+		return (
+			<View style={styles.container}>
+				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+					<View style={styles.headerContainer}>
+						<Icon name="home" size={38} color="gray" /><Text h3 style={styles.textGray}>Outcoming Dashboard</Text>
+					</View>
+				</View>
+				<View>
+					<Card title="Coming">
+						{
+							this.state.coming.map((u, i) => {
+								return (
+									<View key={i} style={styles.headerContainer}>
+										<Avatar.Image
+											source={{ uri: u.child.pucture }}
+											size={50}
+										/>
+										<Text h5 style={{ fontFamily: 'Roboto-Regular', paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
+									</View>
+								);
+							})
+						}
+					</Card>
+					<Card title="In Process">
+						{
+							this.state.inProcess.map((u, i) => {
+								return (
+									<View key={i} style={styles.headerContainer}>
+										<Avatar.Image
+											source={{ uri: u.child.pucture }}
+											size={50}
+										/>
+										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
+									</View>
+								);
+							})
+						}
+					</Card>
+					<Card title="Registered">
+						{
+							this.state.droppedOff.map((u, i) => {
+								return (
+									<View key={i} style={styles.headerContainer}>
+										<Avatar.Image
+											source={{ uri: u.child.pucture }}
+											size={50}
+										/>
+										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
+									</View>
+								);
+							})
+						}
+					</Card>
+				</View>
+			</View >
+		);
+	}
+}
 const DropOffStackScreen = ({ navigation }) => (
 	<DropOffStack.Navigator>
 		<DropOffStack.Screen name="Dropoff" component={DropOff} options={{
@@ -64,7 +341,7 @@ const DropOffStackScreen = ({ navigation }) => (
 			headerStyle: { backgroundColor: '#399998' },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -72,11 +349,13 @@ const DropOffStackScreen = ({ navigation }) => (
 		}} />
 	</DropOffStack.Navigator>
 );
-export const PickUp = () => (
-	<ScreenContainer>
-		<Text></Text>
-	</ScreenContainer>
-);
+function PickUp({ navigation }) {
+	return (
+		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+			<Text>PickUp</Text>
+		</View>
+	);
+}
 const PickUpStackScreen = ({ navigation }) => (
 	<PickUpStack.Navigator>
 		<PickUpStack.Screen name="Pickup" component={PickUp} options={{
@@ -87,7 +366,7 @@ const PickUpStackScreen = ({ navigation }) => (
 			headerStyle: { backgroundColor: '#399998' },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -95,11 +374,13 @@ const PickUpStackScreen = ({ navigation }) => (
 		}} />
 	</PickUpStack.Navigator>
 );
-export const History = () => (
-	<ScreenContainer>
-		<Text></Text>
-	</ScreenContainer>
-);
+function History({ navigation }) {
+	return (
+		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+			<Text>History</Text>
+		</View>
+	);
+}
 const HistoryStackScreen = ({ navigation }) => (
 	<HistoryStack.Navigator>
 		<HistoryStack.Screen name="History" component={History} options={{
@@ -110,7 +391,7 @@ const HistoryStackScreen = ({ navigation }) => (
 			headerStyle: { backgroundColor: '#399998' },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -118,11 +399,13 @@ const HistoryStackScreen = ({ navigation }) => (
 		}} />
 	</HistoryStack.Navigator>
 );
-export const More = () => (
-	<ScreenContainer>
-		<Text></Text>
-	</ScreenContainer>
-);
+function More({ navigation }) {
+	return (
+		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+			<Text>More</Text>
+		</View>
+	);
+}
 const MoreStackScreen = ({ navigation }) => (
 	<MoreStack.Navigator>
 		<MoreStack.Screen name="More" component={More} options={{
@@ -133,7 +416,7 @@ const MoreStackScreen = ({ navigation }) => (
 			headerStyle: { backgroundColor: '#399998' },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -141,11 +424,13 @@ const MoreStackScreen = ({ navigation }) => (
 		}} />
 	</MoreStack.Navigator>
 );
-export const Settings = () => (
-	<ScreenContainer>
-		<Text></Text>
-	</ScreenContainer>
-);
+function Settings({ navigation }) {
+	return (
+		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+			<Text>Settings</Text>
+		</View>
+	);
+}
 const SettingsStackScreen = ({ navigation }) => (
 	<SettingsStack.Navigator>
 		<SettingsStack.Screen name="Settings" component={Settings} options={{
@@ -156,7 +441,7 @@ const SettingsStackScreen = ({ navigation }) => (
 			headerStyle: { backgroundColor: '#399998' },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" color="#fff" onPress={() => navigation.openDrawer()} />
+				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
 			),
 			headerRight: () => (
 				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
@@ -211,9 +496,13 @@ const TabsScreen = () => (
 );
 const Drawer = createDrawerNavigator();
 export default class Home extends Component {
-	state = {
-		fontsLoaded: false
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			fontsLoaded: false
+		}
+	}
+
 	async _loadFontAsync() {
 		await Font.loadAsync(customFonts);
 		this.setState({ fontsLoaded: true });
@@ -260,14 +549,11 @@ const styles = StyleSheet.create({
 	imageBack: {
 		flex: 1,
 		resizeMode: "cover",
-		height: 80
+		height: 65
 	},
 	headerContainer: {
 		display: 'flex',
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		height: '50%',
-		width: '100%',
 		paddingHorizontal: 10,
 	},
 	textWhite: {
@@ -279,7 +565,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'Roboto-Regular'
 	},
 	homeContainer: {
-		padding: 23,
+		padding: 30,
 		height: '85%',
 		flexDirection: 'row',
 		display: 'flex',
