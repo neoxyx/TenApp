@@ -116,7 +116,7 @@ class Dashboard extends Component {
 			<View style={styles.container}>
 				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 					<View style={styles.headerContainer}>
-						<Icon name="home" size={38} color="gray" /><Text h3 style={styles.textGray}>Incoming Dashboard</Text>
+						<Icon name="home" size={42} color="black" /><Text h3 style={styles.textblack}>Incoming Dashboard</Text>
 					</View>
 				</View>
 				<View>
@@ -173,17 +173,21 @@ class Dashboard extends Component {
 }
 const DashboardStackScreen = ({ navigation }) => (
 	<DashboardStack.Navigator>
-		<DashboardStack.Screen name="Dashboard" component={Dashboard} options={{
+		<DashboardStack.Screen name=" " component={Dashboard} options={{
 			headerTintColor: 'white',
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { backgroundColor: '#399998' },
+			headerStyle: { height: 200 },
 			headerLeft: (props) => (
-				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
+				<View style={{ paddingLeft: 30 }}>
+					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+				</View>
 			),
 			headerRight: () => (
-				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				<View style={{ paddingRight: 40 }}>
+					<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				</View>
 			)
 		}} />
 	</DashboardStack.Navigator>
@@ -277,7 +281,7 @@ class DropOff extends Component {
 			<View style={styles.container}>
 				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 					<View style={styles.headerContainer}>
-						<Icon name="home" size={38} color="gray" /><Text h3 style={styles.textGray}>Outcoming Dashboard</Text>
+						<Icon name="home" size={42} color="black" /><Text h3 style={styles.textblack}>Outcoming Dashboard</Text>
 					</View>
 				</View>
 				<View>
@@ -333,18 +337,22 @@ class DropOff extends Component {
 }
 const DropOffStackScreen = ({ navigation }) => (
 	<DropOffStack.Navigator>
-		<DropOffStack.Screen name="Dropoff" component={DropOff} options={{
+		<DropOffStack.Screen name=" " component={DropOff} options={{
 			headerTintColor: 'white',
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { backgroundColor: '#399998' },
+			headerStyle: { height: 200 },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
+				<View style={{ paddingLeft: 30 }}>
+					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+				</View>
 			),
 			headerRight: () => (
-				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				<View style={{ paddingRight: 40 }}>
+					<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				</View>
 			)
 		}} />
 	</DropOffStack.Navigator>
@@ -358,18 +366,22 @@ function PickUp({ navigation }) {
 }
 const PickUpStackScreen = ({ navigation }) => (
 	<PickUpStack.Navigator>
-		<PickUpStack.Screen name="Pickup" component={PickUp} options={{
+		<PickUpStack.Screen name=" " component={PickUp} options={{
 			headerTintColor: 'white',
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { backgroundColor: '#399998' },
+			headerStyle: { height: 200 },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
+				<View style={{ paddingLeft: 30 }}>
+					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+				</View>
 			),
 			headerRight: () => (
-				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				<View style={{ paddingRight: 40 }}>
+					<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				</View>
 			)
 		}} />
 	</PickUpStack.Navigator>
@@ -383,18 +395,22 @@ function History({ navigation }) {
 }
 const HistoryStackScreen = ({ navigation }) => (
 	<HistoryStack.Navigator>
-		<HistoryStack.Screen name="History" component={History} options={{
+		<HistoryStack.Screen name=" " component={History} options={{
 			headerTintColor: 'white',
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { backgroundColor: '#399998' },
+			headerStyle: { height: 200 },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
+				<View style={{ paddingLeft: 30 }}>
+					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+				</View>
 			),
 			headerRight: () => (
-				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				<View style={{ paddingRight: 40 }}>
+					<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				</View>
 			)
 		}} />
 	</HistoryStack.Navigator>
@@ -408,18 +424,22 @@ function More({ navigation }) {
 }
 const MoreStackScreen = ({ navigation }) => (
 	<MoreStack.Navigator>
-		<MoreStack.Screen name="More" component={More} options={{
+		<MoreStack.Screen name=" " component={More} options={{
 			headerTintColor: 'white',
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { backgroundColor: '#399998' },
+			headerStyle: { height: 200 },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
+				<View style={{ paddingLeft: 30 }}>
+					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+				</View>
 			),
 			headerRight: () => (
-				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				<View style={{ paddingRight: 40 }}>
+					<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				</View>
 			)
 		}} />
 	</MoreStack.Navigator>
@@ -433,63 +453,71 @@ function Settings({ navigation }) {
 }
 const SettingsStackScreen = ({ navigation }) => (
 	<SettingsStack.Navigator>
-		<SettingsStack.Screen name="Settings" component={Settings} options={{
+		<SettingsStack.Screen name=" " component={Settings} options={{
 			headerTintColor: 'white',
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { backgroundColor: '#399998' },
+			headerStyle: { height: 200 },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
-				<Icon name="reorder" size={38} color="#fff" onPress={() => navigation.openDrawer()} />
+				<View style={{ paddingLeft: 30 }}>
+					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+				</View>
 			),
 			headerRight: () => (
-				<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				<View style={{ paddingRight: 40 }}>
+					<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+				</View>
 			)
 		}} />
 	</SettingsStack.Navigator>
 );
 const TabsScreen = () => (
-	<Tabs.Navigator tabBarOptions={{
-		activeTintColor: 'gray',
-		inactiveTintColor: 'white',
-		activeBackgroundColor: '#399998',
-		inactiveBackgroundColor: '#399998'
-	}}>
+	<Tabs.Navigator
+		tabBarOptions={{
+			activeTintColor: 'black',
+			inactiveTintColor: 'white',
+			activeBackgroundColor: '#399998',
+			inactiveBackgroundColor: '#399998',
+			style: { height: 150 },
+			labelPosition: 'below-icon',
+			labelStyle: { fontFamily: 'Roboto-Regular', fontSize: 24 }
+		}}>
 		<Tabs.Screen name="Dashboard" component={DashboardStackScreen} options={{
 			tabBarLabel: 'Dashboard',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="home" color={color} size={size} />
+				<Icon name="home" color={color} size={60} />
 			),
 		}} />
 		<Tabs.Screen name="DropOff" component={DropOffStackScreen} options={{
 			tabBarLabel: 'DropOff',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="child-care" color={color} size={size} />
+				<Icon name="child-care" color={color} size={60} />
 			),
 		}} />
 		<Tabs.Screen name="Pickup" component={PickUpStackScreen} options={{
 			tabBarLabel: 'Pickup',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="directions-car" color={color} size={size} />
+				<Icon name="directions-car" color={color} size={60} />
 			),
 		}} />
 		<Tabs.Screen name="History" component={HistoryStackScreen} options={{
 			tabBarLabel: 'History',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="history" color={color} size={size} />
+				<Icon name="history" color={color} size={60} />
 			),
 		}} />
 		<Tabs.Screen name="More" component={MoreStackScreen} options={{
 			tabBarLabel: 'More',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="more-horiz" color={color} size={size} />
+				<Icon name="more-horiz" color={color} size={60} />
 			),
 		}} />
 		<Tabs.Screen name="Settings" component={SettingsStackScreen} options={{
 			tabBarLabel: 'Settings',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="settings" color={color} size={size} />
+				<Icon name="settings" color={color} size={60} />
 			),
 		}} />
 	</Tabs.Navigator>
@@ -549,7 +577,7 @@ const styles = StyleSheet.create({
 	imageBack: {
 		flex: 1,
 		resizeMode: "cover",
-		height: 65
+		height: 200
 	},
 	headerContainer: {
 		display: 'flex',
@@ -560,8 +588,8 @@ const styles = StyleSheet.create({
 		color: '#fff',
 		fontFamily: 'Roboto-Regular'
 	},
-	textGray: {
-		color: 'gray',
+	textblack: {
+		color: 'black',
 		fontFamily: 'Roboto-Regular'
 	},
 	homeContainer: {
@@ -575,8 +603,8 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 	},
 	image: {
-		width: 75,
-		height: 30,
+		width: 230,
+		height: 90
 	},
 	profileImg: {
 		width: 80,

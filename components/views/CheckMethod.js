@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		resizeMode: "cover",
 		justifyContent: "center",
-		height: 700
+		height: 1800
 	},
 	content: {
 		padding: 23,
