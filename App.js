@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Router, Route } from './react-router.native';
 import Views from './components/views/';
 import { View, StatusBar, StyleSheet } from 'react-native';
@@ -11,21 +11,23 @@ const theme = {
 	},
 };
 
-export default function App() {
-	return (
-		<ThemeProvider theme={theme}>
-			<StatusBar barStyle="light-content" />
-			<Router>
-				<View style={styles.container}>
-					<Route exact path="/" component={CheckMethod} />
-					<Route path="/login" component={Login} />
-					<Route path="/forgot-password" component={ForgotPassword} />
-					<Route path="/choose-role" component={ChooseRole} />
-					<Route path="/home" component={Home} />
-				</View>
-			</Router>
-		</ThemeProvider>
-	);
+export default class App extends Component {
+	render() {
+		return (
+			<ThemeProvider theme={theme}>
+				<StatusBar barStyle="light-content" />
+				<Router>
+					<View style={styles.container}>
+						<Route exact path="/" component={CheckMethod} />
+						<Route path="/login" component={Login} />
+						<Route path="/forgot-password" component={ForgotPassword} />
+						<Route path="/choose-role" component={ChooseRole} />
+						<Route path="/home" component={Home} />
+					</View>
+				</Router>
+			</ThemeProvider>
+		);
+	}
 }
 
 const styles = StyleSheet.create({

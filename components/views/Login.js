@@ -7,7 +7,12 @@ import { Link } from '../../react-router.native';
 import { button as Button } from '../elements/Button';
 import Api from '../../constans/Api';
 import { Redirect } from 'react-router-dom';
-import { Picker } from '@react-native-community/picker';
+import SearchableDropdown from 'react-native-searchable-dropdown';
+import {
+	heightPercentageToDP as hp,
+	widthPercentageToDP as wp
+} from 'react-native-responsive-screen';
+
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
 	'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
@@ -24,6 +29,7 @@ export default class Login extends Component {
 			st: false,
 			fontsLoaded: false,
 			centers: [],
+			selectedValue: ''
 		}
 	}
 
@@ -87,53 +93,62 @@ export default class Login extends Component {
 			return <Redirect to={'/home'} />
 		}
 		if (this.state.fontsLoaded) {
-			let myCenters = this.state.centers.map((myValue, myIndex) => {
-				return (
-					<Picker.Item label={myValue.name} value={myValue.name} key={myIndex} />
-				)
-			})
+
 			return (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack}>
 					<View style={styles.container}>
 						<View style={styles.headerContainer}>
 							<Link to="/">
-								<Icon name="arrow-back" color="#fff" />
+								<Icon name="arrow-back" color="#fff" size={60} />
 							</Link>
 							<Link to="/forgot-password">
-								<Text style={styles.textWhite}>Forgot my password</Text>
+								<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('4%'), color: 'white' }}>Forgot my password</Text>
 							</Link>
 						</View>
-						<View style={styles.loginContainer}>
-							<View style={styles.titleContainer}>
-								<Text h3 style={styles.textWhite}>
+						<View style={styles.content}>
+							<View style={styles.formContainer}>
+								<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('6%'), color: 'white', paddingBottom: 50 }}>
 									Log in
 								</Text>
-							</View>
-
-							<View style={styles.componentContainer}>
-								<Picker style={styles.select} selectedValue={this.state.center} onValueChange={(value) => this.setState({ center: value })} >
-									<Picker.Item label="CHOOSE CENTER" />
-									{myCenters}
-								</Picker>
-							</View>
-
-							<View style={styles.componentContainer}>
-								<Input value={this.state.email} type="text" placeholder="EMAIL ADDRESS" onChangeText={(email) => this.setState({ email })} inputContainerStyle={styles.input} inputStyle={styles.input} />
-							</View>
-
-							<View style={styles.componentContainer}>
-								<Input value={this.state.password} type="password" placeholder="PASSWORD" onChangeText={(password) => this.setState({ password })} secureTextEntry={true} inputContainerStyle={styles.input} inputStyle={styles.input} />
-							</View>
-
-							<View style={styles.buttonContainer}>
-								<Button buttonStyle={styles.button} title="Log In" onPress={this.onLogin} />
-								<Link to="/choose-role">
-									<Text style={{ fontFamily: 'Roboto-Regular' }}>Choose your role</Text>
-								</Link>
+								<SearchableDropdown
+									onTextChange={text => console.log(text)}
+									onItemSelect={item => this.setState({ center: item.name })}
+									//onItemSelect called after the selection from the dropdown
+									containerStyle={{ paddingBottom: 40 }}
+									//suggestion container style
+									textInputStyle={{ color: 'white', fontSize: hp('3%'), paddingHorizontal: 8 }}
+									itemStyle={
+										//single dropdown item style
+										styles.input
+									}
+									itemTextStyle={{
+										//text style of a single dropdown item
+										color: 'white',
+										fontFamily: 'Roboto-Regular',
+										fontSize: hp('3%'),
+									}}
+									items={this.state.centers}
+									//mapping of item array
+									defaultIndex={2}
+									//default selected item index
+									placeholder="CENTER NAME"
+									//place holder for the search input
+									resetValue={false}
+								//To remove the underline from the android input
+								/>
+								<View style={styles.formInputs}>
+									<Input value={this.state.email} type="text" placeholder="EMAIL ADDRESS" onChangeText={(email) => this.setState({ email })} inputContainerStyle={styles.input} inputStyle={styles.input} />
+								</View>
+								<View style={styles.formInputs}>
+									<Input value={this.state.password} type="password" placeholder="PASSWORD" onChangeText={(password) => this.setState({ password })} secureTextEntry={true} inputContainerStyle={styles.input} inputStyle={styles.input} />
+								</View>
+								<View style={styles.buttonContainer}>
+									<Button buttonStyle={styles.button} title="Log In" titleStyle={styles.textGmail} onPress={this.onLogin} />
+								</View>
 							</View>
 						</View>
 					</View>
-				</ImageBackground>
+				</ImageBackground >
 			);
 		} else {
 			return <AppLoading />
@@ -146,64 +161,63 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		flexDirection: "column",
-		paddingTop: 10
+		paddingTop: hp('1%')
+	},
+	content: {
+		padding: hp('2.3%'),
+		height: hp('85%'),
+		flexDirection: 'row',
+		display: 'flex',
+		width: wp('100%'),
+		justifyContent: 'space-around',
+		alignContent: 'center',
+		flexWrap: 'wrap',
+	},
+	formInputs: {
+		width: wp('35%'),
+		paddingBottom: 30
 	},
 	imageBack: {
 		flex: 1,
 		resizeMode: "cover",
 		justifyContent: "center",
-		height: 1800
+		height: hp('100%')
 	},
-	loginContainer: {
-		padding: 23,
-		height: '85%',
-		flexDirection: 'row',
-		display: 'flex',
-		width: '100%',
-		justifyContent: 'space-around',
-		alignContent: 'center',
-		flexWrap: 'wrap',
-	},
-	titleContainer: {
-		width: '100%',
-		marginBottom: 50,
-	},
-	componentContainer: {
-		width: '100%',
-		marginBottom: 30,
+	formContainer: {
+		alignItems: 'baseline',
+		width: wp('30%'),
+		height: hp('50%')
 	},
 	buttonContainer: {
-		justifyContent: 'space-around',
 		alignItems: 'center',
-		width: '100%',
+		width: wp('35%'),
+		height: hp('50%')
 	},
 	button: {
-		paddingVertical: 10,
-		paddingHorizontal: 30,
+		paddingVertical: hp('1%'),
+		paddingHorizontal: wp('4%'),
 		borderRadius: 8,
-		marginBottom: 25,
+		marginBottom: hp('2.5%'),
 	},
 	headerContainer: {
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		height: '5%',
-		width: '100%',
-		paddingHorizontal: 10,
-	},
-	textWhite: {
-		color: '#fff',
-		fontFamily: 'Roboto-Regular'
+		height: hp('10%'),
+		width: wp('100%'),
+		paddingHorizontal: wp('2%'),
+		paddingTop: hp('4%')
 	},
 	input: {
 		color: '#fff',
 		borderColor: '#fff',
+		fontFamily: 'Roboto-Regular',
+		fontSize: hp('3%')
 	},
-	select: {
-		width: '98%',
-		paddingLeft: 10,
-		color: '#fff',
-		borderBottomColor: '#fff',
+	textGmail: {
+		color: '#399998',
+		fontFamily: 'Roboto-Regular',
+		fontSize: hp('4%')
 	},
 });

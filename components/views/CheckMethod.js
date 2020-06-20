@@ -1,20 +1,28 @@
-import React from 'react';
-import { View, StyleSheet, Image, ImageBackground, Text } from 'react-native';
+import React, { Component } from 'react';
+import { View, StyleSheet, Image, ImageBackground, Text, ScrollView } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Link } from '../../react-router.native';
 import { button as Button, buttonOutlined as ButtonOutlined } from '../elements/Button';
+import {
+	heightPercentageToDP as hp,
+	widthPercentageToDP as wp
+} from 'react-native-responsive-screen';
 
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
 	'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
 	'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
+	'Roboto-Bold': require('../../assets/fonts/Roboto-Bold.ttf'),
 }
 
-export default class CheckMethod extends React.Component {
-	state = {
-		fontsLoaded: false,
-	};
+export default class CheckMethod extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			fontsLoaded: false
+		}
+	}
 	async _loadFontAsync() {
 		await Font.loadAsync(customFonts);
 		this.setState({ fontsLoaded: true });
@@ -28,29 +36,26 @@ export default class CheckMethod extends React.Component {
 			return (
 				<View style={styles.container} >
 					<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack}>
-						<View style={styles.headerContainer}>
-							<Link to="/login">
-								<Text h4 style={styles.textWhite}>
-									Log in
+						<ScrollView>
+							<View style={styles.headerContainer}>
+								<Link to="/login">
+									<Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('4%'), fontWeight: '300', color: 'white' }}>
+										Log in
 								</Text>
-							</Link>
-						</View>
-						<View style={styles.content}>
-							<View style={styles.imageContainer}>
-								<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+								</Link>
 							</View>
-
-							<View style={styles.titleContainer}>
-								<Text style={styles.title}>Welcome to Ten App</Text>
+							<View style={styles.content}>
+								<View style={styles.buttonContainer}>
+									<Image style={styles.image} source={require('../../assets/img/logo.png')} />
+									<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('4.8%'), color: 'white', paddingTop: 30, paddingBottom: 30 }}> Welcome to Ten App</Text>
+									<Button buttonStyle={styles.button} titleStyle={styles.textGmail} title="Continue with Gmail" />
+									<ButtonOutlined buttonStyle={styles.button} titleStyle={styles.textCreateAccount} title="Create Account" />
+								</View>
 							</View>
-
-							<View style={styles.buttonContainer}>
-								<Button buttonStyle={styles.button} title="Continue with Gmail" />
-								<ButtonOutlined buttonStyle={styles.button} titleStyle={styles.textWhite} title="Create Account" />
-							</View>
-						</View>
+						</ScrollView>
 					</ImageBackground>
-				</View>
+				</View >
+
 			)
 		} else {
 			return <AppLoading />
@@ -61,56 +66,40 @@ export default class CheckMethod extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		flexDirection: "column"
+		flexDirection: "row",
+		alignItems: 'center'
 	},
 	imageBack: {
 		flex: 1,
 		resizeMode: "cover",
 		justifyContent: "center",
-		height: 1800
+		height: hp('100%')
 	},
 	content: {
-		padding: 23,
-		height: '85%',
+		padding: hp('2.3%'),
+		height: hp('85%'),
 		flexDirection: 'row',
 		display: 'flex',
-		width: '100%',
+		width: wp('100%'),
 		justifyContent: 'space-around',
 		alignContent: 'center',
 		flexWrap: 'wrap',
 	},
-	title: {
-		fontSize: 24,
-		textAlign: 'center',
-		color: '#fff',
-		fontFamily: 'Roboto-Regular'
-	},
-	titleContainer: {
-		width: '100%',
-		marginBottom: 20
-	},
-	componentContainer: {
-		width: '100%',
-		marginBottom: 30,
-	},
 	buttonContainer: {
-		width: '100%',
-	},
-	imageContainer: {
-		width: '100%',
 		alignItems: 'center',
-		marginBottom: 40,
+		width: wp('30%'),
+		height: hp('50%')
 	},
 	image: {
-		width: 200,
-		height: 80,
+		width: wp('20%'),
+		height: hp('13%')
 	},
 	button: {
-		paddingVertical: 10,
-		width: '100%',
+		paddingVertical: hp('1%'),
+		width: wp('30%'),
 		borderRadius: 8,
 		textAlign: 'center',
-		marginBottom: 10,
+		marginBottom: hp('1.0%'),
 		fontFamily: 'Roboto-Regular'
 	},
 	headerContainer: {
@@ -118,12 +107,19 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-		height: '5%',
-		width: '100%',
-		paddingHorizontal: 10,
+		height: hp('5%'),
+		width: wp('100%'),
+		paddingHorizontal: wp('2%'),
+		paddingTop: hp('4%')
 	},
-	textWhite: {
+	textCreateAccount: {
 		color: '#fff',
-		fontFamily: 'Roboto-Regular'
+		fontFamily: 'Roboto-Regular',
+		fontSize: hp('4%')
+	},
+	textGmail: {
+		color: '#399998',
+		fontFamily: 'Roboto-Regular',
+		fontSize: hp('4%')
 	},
 });

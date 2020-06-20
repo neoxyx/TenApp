@@ -4,13 +4,9 @@ import {
     Avatar,
     Title,
     Caption,
-    Paragraph,
-    Drawer,
-    Text,
-    TouchableRipple,
-    Switch
+    Drawer
 } from 'react-native-paper';
-import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Api from '../../constans/Api';
 import { Redirect } from 'react-router-dom';

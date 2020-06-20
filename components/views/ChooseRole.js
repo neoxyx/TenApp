@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, ImageBackground } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import { Text, Icon, Avatar } from 'react-native-elements';
+import { Text, Icon } from 'react-native-elements';
 import { Dropdown } from 'react-native-material-dropdown';
 import { Link } from '../../react-router.native';
 

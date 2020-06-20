@@ -1,17 +1,23 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, ImageBackground, AsyncStorage, Alert } from 'react-native';
+import { View, StyleSheet, Image, ImageBackground } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import { Icon, Card, Text, ListItem } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import Api from '../../constans/Api';
 import { DrawerContent } from './DrawerContent';
+import { Dashboard } from './Dashboard';
+import { DropOff } from './DropOff';
+import { PickUp } from './PickUp';
+import { History } from './History';
+import { More } from './More';
+import { Settings } from './Settings';
 import {
-	Avatar
-} from 'react-native-paper';
+	heightPercentageToDP as hp,
+	widthPercentageToDP as wp
+} from 'react-native-responsive-screen';
 
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
@@ -27,150 +33,7 @@ const MoreStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 
-class Dashboard extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			fontsLoaded: false,
-			coming: [],
-			process: [],
-			registered: []
-		}
-	}
 
-	async _loadFontAsync() {
-		await Font.loadAsync(customFonts);
-		this.setState({ fontsLoaded: true });
-	}
-	async getComing() {
-		let userToken = await AsyncStorage.getItem("token");
-		let data = JSON.parse(userToken);
-		let dataMe = {
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'access-token': data
-			}
-		}
-
-		fetch(Api.url + 'api/protocols/1/status/1', dataMe)
-			.then((response) => response.json())
-			.then((responseJson) => {
-				this.setState({ coming: responseJson });
-			})
-			.catch((error) => {
-				Alert.alert(error);
-			});
-	}
-	async getProcess() {
-		let userToken = await AsyncStorage.getItem("token");
-		let data = JSON.parse(userToken);
-		let dataMe = {
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'access-token': data
-			}
-		}
-
-		fetch(Api.url + 'api/protocols/1/status/2', dataMe)
-			.then((response) => response.json())
-			.then((responseJson) => {
-				this.setState({ process: responseJson });
-			})
-			.catch((error) => {
-				Alert.alert(error);
-			});
-	}
-	async getRegistered() {
-		let userToken = await AsyncStorage.getItem("token");
-		let data = JSON.parse(userToken);
-		let dataMe = {
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'access-token': data
-			}
-		}
-
-		fetch(Api.url + 'api/protocols/1/status/3', dataMe)
-			.then((response) => response.json())
-			.then((responseJson) => {
-				this.setState({ registered: responseJson });
-			})
-			.catch((error) => {
-				Alert.alert(error);
-			});
-	}
-	componentDidMount() {
-		this._loadFontAsync();
-		this.getComing();
-		this.getProcess();
-		this.getRegistered();
-	}
-	render() {
-		return (
-			<View style={styles.container}>
-				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-					<View style={styles.headerContainer}>
-						<Icon name="home" size={42} color="black" /><Text h3 style={styles.textblack}>Incoming Dashboard</Text>
-					</View>
-				</View>
-				<View>
-					<Card title="Coming">
-						{
-							this.state.coming.map((u, i) => {
-								return (
-									<View key={i} style={styles.headerContainer}>
-										<Avatar.Image
-											source={{ uri: u.child.pucture }}
-											size={50}
-										/>
-										<Text h5 style={{ fontFamily: 'Roboto-Regular', paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
-									</View>
-								);
-							})
-						}
-					</Card>
-					<Card title="In Process">
-						{
-							this.state.process.map((u, i) => {
-								return (
-									<View key={i} style={styles.headerContainer}>
-										<Avatar.Image
-											source={{ uri: u.child.pucture }}
-											size={50}
-										/>
-										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
-									</View>
-								);
-							})
-						}
-					</Card>
-					<Card title="Registered">
-						{
-							this.state.registered.map((u, i) => {
-								return (
-									<View key={i} style={styles.headerContainer}>
-										<Avatar.Image
-											source={{ uri: u.child.pucture }}
-											size={50}
-										/>
-										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
-									</View>
-								);
-							})
-						}
-					</Card>
-				</View>
-			</View >
-		);
-	}
-
-}
 const DashboardStackScreen = ({ navigation }) => (
 	<DashboardStack.Navigator>
 		<DashboardStack.Screen name=" " component={Dashboard} options={{
@@ -178,10 +41,10 @@ const DashboardStackScreen = ({ navigation }) => (
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { height: 200 },
+			headerStyle: { height: hp('10%') },
 			headerLeft: (props) => (
 				<View style={{ paddingLeft: 30 }}>
-					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+					<Icon name="reorder" size={hp('9%')} color="#fff" onPress={() => navigation.openDrawer()} />
 				</View>
 			),
 			headerRight: () => (
@@ -192,149 +55,7 @@ const DashboardStackScreen = ({ navigation }) => (
 		}} />
 	</DashboardStack.Navigator>
 );
-class DropOff extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			fontsLoaded: false,
-			coming: [],
-			inProcess: [],
-			droppedOff: []
-		}
-	}
 
-	async _loadFontAsync() {
-		await Font.loadAsync(customFonts);
-		this.setState({ fontsLoaded: true });
-	}
-	async getComing() {
-		let userToken = await AsyncStorage.getItem("token");
-		let data = JSON.parse(userToken);
-		let dataMe = {
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'access-token': data
-			}
-		}
-
-		fetch(Api.url + 'api/protocols/2/status/1', dataMe)
-			.then((response) => response.json())
-			.then((responseJson) => {
-				this.setState({ coming: responseJson });
-			})
-			.catch((error) => {
-				Alert.alert(error);
-			});
-	}
-	async getInProcess() {
-		let userToken = await AsyncStorage.getItem("token");
-		let data = JSON.parse(userToken);
-		let dataMe = {
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'access-token': data
-			}
-		}
-
-		fetch(Api.url + 'api/protocols/2/status/2', dataMe)
-			.then((response) => response.json())
-			.then((responseJson) => {
-				this.setState({ inProcess: responseJson });
-			})
-			.catch((error) => {
-				Alert.alert(error);
-			});
-	}
-	async getDroppedOff() {
-		let userToken = await AsyncStorage.getItem("token");
-		let data = JSON.parse(userToken);
-		let dataMe = {
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				'access-token': data
-			}
-		}
-
-		fetch(Api.url + 'api/protocols/2/status/3', dataMe)
-			.then((response) => response.json())
-			.then((responseJson) => {
-				this.setState({ droppedOff: responseJson });
-			})
-			.catch((error) => {
-				Alert.alert(error);
-			});
-	}
-	componentDidMount() {
-		this._loadFontAsync();
-		this.getComing();
-		this.getInProcess();
-		this.getDroppedOff();
-	}
-	render() {
-		return (
-			<View style={styles.container}>
-				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-					<View style={styles.headerContainer}>
-						<Icon name="home" size={42} color="black" /><Text h3 style={styles.textblack}>Outcoming Dashboard</Text>
-					</View>
-				</View>
-				<View>
-					<Card title="Coming">
-						{
-							this.state.coming.map((u, i) => {
-								return (
-									<View key={i} style={styles.headerContainer}>
-										<Avatar.Image
-											source={{ uri: u.child.pucture }}
-											size={50}
-										/>
-										<Text h5 style={{ fontFamily: 'Roboto-Regular', paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
-									</View>
-								);
-							})
-						}
-					</Card>
-					<Card title="In Process">
-						{
-							this.state.inProcess.map((u, i) => {
-								return (
-									<View key={i} style={styles.headerContainer}>
-										<Avatar.Image
-											source={{ uri: u.child.pucture }}
-											size={50}
-										/>
-										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
-									</View>
-								);
-							})
-						}
-					</Card>
-					<Card title="Registered">
-						{
-							this.state.droppedOff.map((u, i) => {
-								return (
-									<View key={i} style={styles.headerContainer}>
-										<Avatar.Image
-											source={{ uri: u.child.pucture }}
-											size={50}
-										/>
-										<Text h5 >{u.child.fname + ' ' + u.child.lname + '\n ESTIMATE TIME ' + u.eta + ' MIN'}</Text>
-									</View>
-								);
-							})
-						}
-					</Card>
-				</View>
-			</View >
-		);
-	}
-}
 const DropOffStackScreen = ({ navigation }) => (
 	<DropOffStack.Navigator>
 		<DropOffStack.Screen name=" " component={DropOff} options={{
@@ -342,11 +63,11 @@ const DropOffStackScreen = ({ navigation }) => (
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { height: 200 },
+			headerStyle: { height: hp('10%') },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
 				<View style={{ paddingLeft: 30 }}>
-					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+					<Icon name="reorder" size={hp('9%')} color="#fff" onPress={() => navigation.openDrawer()} />
 				</View>
 			),
 			headerRight: () => (
@@ -357,13 +78,7 @@ const DropOffStackScreen = ({ navigation }) => (
 		}} />
 	</DropOffStack.Navigator>
 );
-function PickUp({ navigation }) {
-	return (
-		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-			<Text>PickUp</Text>
-		</View>
-	);
-}
+
 const PickUpStackScreen = ({ navigation }) => (
 	<PickUpStack.Navigator>
 		<PickUpStack.Screen name=" " component={PickUp} options={{
@@ -371,11 +86,11 @@ const PickUpStackScreen = ({ navigation }) => (
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { height: 200 },
+			headerStyle: { height: hp('10%') },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
 				<View style={{ paddingLeft: 30 }}>
-					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+					<Icon name="reorder" size={hp('9%')} color="#fff" onPress={() => navigation.openDrawer()} />
 				</View>
 			),
 			headerRight: () => (
@@ -386,13 +101,6 @@ const PickUpStackScreen = ({ navigation }) => (
 		}} />
 	</PickUpStack.Navigator>
 );
-function History({ navigation }) {
-	return (
-		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-			<Text>History</Text>
-		</View>
-	);
-}
 const HistoryStackScreen = ({ navigation }) => (
 	<HistoryStack.Navigator>
 		<HistoryStack.Screen name=" " component={History} options={{
@@ -400,11 +108,11 @@ const HistoryStackScreen = ({ navigation }) => (
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { height: 200 },
+			headerStyle: { height: hp('10%') },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
 				<View style={{ paddingLeft: 30 }}>
-					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+					<Icon name="reorder" size={hp('9%')} color="#fff" onPress={() => navigation.openDrawer()} />
 				</View>
 			),
 			headerRight: () => (
@@ -415,13 +123,6 @@ const HistoryStackScreen = ({ navigation }) => (
 		}} />
 	</HistoryStack.Navigator>
 );
-function More({ navigation }) {
-	return (
-		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-			<Text>More</Text>
-		</View>
-	);
-}
 const MoreStackScreen = ({ navigation }) => (
 	<MoreStack.Navigator>
 		<MoreStack.Screen name=" " component={More} options={{
@@ -429,11 +130,11 @@ const MoreStackScreen = ({ navigation }) => (
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { height: 200 },
+			headerStyle: { height: hp('10%') },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
 				<View style={{ paddingLeft: 30 }}>
-					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+					<Icon name="reorder" size={hp('9%')} color="#fff" onPress={() => navigation.openDrawer()} />
 				</View>
 			),
 			headerRight: () => (
@@ -444,13 +145,6 @@ const MoreStackScreen = ({ navigation }) => (
 		}} />
 	</MoreStack.Navigator>
 );
-function Settings({ navigation }) {
-	return (
-		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-			<Text>Settings</Text>
-		</View>
-	);
-}
 const SettingsStackScreen = ({ navigation }) => (
 	<SettingsStack.Navigator>
 		<SettingsStack.Screen name=" " component={Settings} options={{
@@ -458,11 +152,11 @@ const SettingsStackScreen = ({ navigation }) => (
 			headerBackground: () => (
 				<ImageBackground source={require('../../assets/img/bg.png')} style={styles.imageBack} />
 			),
-			headerStyle: { height: 200 },
+			headerStyle: { height: hp('10%') },
 			headerBackTitleVisible: false,
 			headerLeft: (props) => (
 				<View style={{ paddingLeft: 30 }}>
-					<Icon name="reorder" size={90} color="#fff" onPress={() => navigation.openDrawer()} />
+					<Icon name="reorder" size={hp('9%')} color="#fff" onPress={() => navigation.openDrawer()} />
 				</View>
 			),
 			headerRight: () => (
@@ -480,49 +174,50 @@ const TabsScreen = () => (
 			inactiveTintColor: 'white',
 			activeBackgroundColor: '#399998',
 			inactiveBackgroundColor: '#399998',
-			style: { height: 150 },
+			style: { height: hp('12%') },
 			labelPosition: 'below-icon',
-			labelStyle: { fontFamily: 'Roboto-Regular', fontSize: 24 }
+			labelStyle: { fontFamily: 'Roboto-Regular', fontSize: hp('2.4%') }
 		}}>
 		<Tabs.Screen name="Dashboard" component={DashboardStackScreen} options={{
 			tabBarLabel: 'Dashboard',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="home" color={color} size={60} />
+				<Icon name="home" color={color} size={hp('6%')} />
 			),
 		}} />
 		<Tabs.Screen name="DropOff" component={DropOffStackScreen} options={{
 			tabBarLabel: 'DropOff',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="child-care" color={color} size={60} />
+				<Icon name="child-care" color={color} size={hp('6%')} />
 			),
 		}} />
 		<Tabs.Screen name="Pickup" component={PickUpStackScreen} options={{
 			tabBarLabel: 'Pickup',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="directions-car" color={color} size={60} />
+				<Icon name="directions-car" color={color} size={hp('6%')} />
 			),
 		}} />
 		<Tabs.Screen name="History" component={HistoryStackScreen} options={{
 			tabBarLabel: 'History',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="history" color={color} size={60} />
+				<Icon name="history" color={color} size={hp('6%')} />
 			),
 		}} />
 		<Tabs.Screen name="More" component={MoreStackScreen} options={{
 			tabBarLabel: 'More',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="more-horiz" color={color} size={60} />
+				<Icon name="more-horiz" color={color} size={hp('6%')} />
 			),
 		}} />
 		<Tabs.Screen name="Settings" component={SettingsStackScreen} options={{
 			tabBarLabel: 'Settings',
 			tabBarIcon: ({ color, size }) => (
-				<Icon name="settings" color={color} size={60} />
+				<Icon name="settings" color={color} size={hp('6%')} />
 			),
 		}} />
 	</Tabs.Navigator>
 );
 const Drawer = createDrawerNavigator();
+
 export default class Home extends Component {
 	constructor(props) {
 		super(props);
@@ -561,28 +256,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: "column"
 	},
-	content: {
-		height: '85%',
-		flexDirection: 'row',
-		display: 'flex',
-		width: '90%',
-		justifyContent: 'space-around',
-		alignContent: 'center',
-		flexWrap: 'wrap',
-		paddingLeft: 30,
-	},
-	titleContainer: {
-		width: '100%'
-	},
 	imageBack: {
 		flex: 1,
-		resizeMode: "cover",
-		height: 200
-	},
-	headerContainer: {
-		display: 'flex',
-		flexDirection: 'row',
-		paddingHorizontal: 10,
+		resizeMode: "cover"
 	},
 	textWhite: {
 		color: '#fff',
@@ -592,23 +268,13 @@ const styles = StyleSheet.create({
 		color: 'black',
 		fontFamily: 'Roboto-Regular'
 	},
-	homeContainer: {
-		padding: 30,
-		height: '85%',
-		flexDirection: 'row',
-		display: 'flex',
-		width: '100%',
-		justifyContent: 'space-around',
-		alignContent: 'center',
-		flexWrap: 'wrap',
-	},
 	image: {
-		width: 230,
-		height: 90
+		width: wp('9%'),
+		height: hp('5%')
 	},
 	profileImg: {
-		width: 80,
-		height: 80,
+		width: wp('8%'),
+		height: hp('8%'),
 		borderRadius: 40,
 		marginTop: 20
 	}
