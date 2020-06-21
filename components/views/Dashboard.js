@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage, Alert, ScrollView } from 'react-native';
+import React, { Component, useState } from 'react';
+import { Modal, View, StyleSheet, AsyncStorage, Alert, ScrollView, TouchableHighlight } from 'react-native';
 import * as Font from 'expo-font';
 import { Card, Icon, Text, Badge } from 'react-native-elements';
 import Api from '../../constans/Api';
@@ -28,7 +28,10 @@ export class Dashboard extends Component {
             process: [],
             processPickup: [],
             registered: [],
-            registeredArrived: []
+            registeredArrived: [],
+            modalVisible: false,
+            setModalVisible: false,
+            picture: ''
         }
     }
 
@@ -182,28 +185,58 @@ export class Dashboard extends Component {
                         </View>
                     </View>
                     <View style={styles.headerContainer}>
+                        <View style={{ margin: 30 }}>
+                            <Modal
+                                animationType="slide"
+                                transparent={false}
+                                visible={this.state.modalVisible}>
+                                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                    <View style={styles.headerContainer}>
+                                        <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('5%'), color: 'gray' }}>Input Protocol</Text>
+                                    </View>
+                                    <View style={styles.cardContainer} >
+                                        <Avatar.Image
+                                            source={{ uri: this.state.picture }}
+                                            size={70}
+                                        />
+                                    </View>
+                                    <TouchableHighlight
+                                        onPress={() => {
+                                            this.setState({ modalVisible: false });
+                                        }}>
+                                        <Text>Hide Modal</Text>
+                                    </TouchableHighlight>
+                                </View>
+                            </Modal>
+                        </View>
                         <Card title="Coming" titleStyle={{ fontSize: hp('3.5%'), fontFamily: 'Roboto-Regular', color: 'gray' }}>
                             {
                                 this.state.commingArrived.map((u, i) => {
                                     return (
-                                        <View key={i} style={styles.cardContainer} >
-                                            <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
-                                                size={70}
-                                            />
-                                            <Badge
-                                                badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
-                                                status="error"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 300 }}
-                                            />
-                                            <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }}>{u.child.fname + ' ' + u.child.lname}</Text>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>ARRIVED</Text>
-                                                    <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
+                                        <TouchableHighlight
+                                            onPress={() => {
+                                                this.setState({ picture: u.child.pucture });
+                                                this.setState({ modalVisible: true });
+                                            }}>
+                                            <View key={i} style={styles.cardContainer} >
+                                                <Avatar.Image
+                                                    source={{ uri: u.child.pucture }}
+                                                    size={70}
+                                                />
+                                                <Badge
+                                                    badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
+                                                    status="error"
+                                                    containerStyle={{ position: 'absolute', top: 3, right: 300 }}
+                                                />
+                                                <View style={{ flexDirection: 'column' }}>
+                                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }}>{u.child.fname + ' ' + u.child.lname}</Text>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>ARRIVED</Text>
+                                                        <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
+                                                    </View>
                                                 </View>
                                             </View>
-                                        </View>
+                                        </TouchableHighlight>
                                     );
                                 })
                             }
