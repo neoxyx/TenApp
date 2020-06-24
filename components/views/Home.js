@@ -23,6 +23,7 @@ let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
 	'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
 	'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
+	'Roboto-Thin': require('../../assets/fonts/Roboto-Thin.ttf'),
 }
 
 const DashboardStack = createStackNavigator();

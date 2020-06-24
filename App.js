@@ -3,7 +3,7 @@ import { Router, Route } from './react-router.native';
 import Views from './components/views/';
 import { View, StatusBar, StyleSheet } from 'react-native';
 import { ThemeProvider } from 'react-native-elements';
-const { ForgotPassword, CheckMethod, ChooseRole, Home, Login } = Views;
+const { ForgotPassword, CheckMethod, ChooseRole, Home, Login, Parent } = Views;
 
 const theme = {
 	colors: {
@@ -23,6 +23,7 @@ export default class App extends Component {
 						<Route path="/forgot-password" component={ForgotPassword} />
 						<Route path="/choose-role" component={ChooseRole} />
 						<Route path="/home" component={Home} />
+						<Route path="/parent" component={Parent} />
 					</View>
 				</Router>
 			</ThemeProvider>

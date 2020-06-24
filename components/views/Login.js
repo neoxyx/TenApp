@@ -12,6 +12,8 @@ import {
 	heightPercentageToDP as hp,
 	widthPercentageToDP as wp
 } from 'react-native-responsive-screen';
+import JwtDecode from 'jwt-decode';
+import { set } from 'react-native-reanimated';
 
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
@@ -29,7 +31,8 @@ export default class Login extends Component {
 			st: false,
 			fontsLoaded: false,
 			centers: [],
-			selectedValue: ''
+			selectedValue: '',
+			parent: false
 		}
 	}
 
@@ -75,6 +78,10 @@ export default class Login extends Component {
 			.then((response) => response.json())
 			.then((responseJson) => {
 				if (responseJson.token !== undefined) {
+					var jwtDecode = require('jwt-decode');
+					var token = responseJson.token;
+					var decode = jwtDecode(token);
+					this.setState({ parent: decode.parent });
 					this.storeToken(responseJson.token)
 					this.setState({ st: true });
 				} else {
@@ -88,8 +95,10 @@ export default class Login extends Component {
 
 
 	render() {
-		const { st } = this.state;
-		if (st) {
+		if (this.state.st && this.state.parent) {
+			return <Redirect to={'/parent'} />
+		}
+		if (this.state.st && !this.state.parent) {
 			return <Redirect to={'/home'} />
 		}
 		if (this.state.fontsLoaded) {
@@ -99,15 +108,15 @@ export default class Login extends Component {
 					<View style={styles.container}>
 						<View style={styles.headerContainer}>
 							<Link to="/">
-								<Icon name="arrow-back" color="#fff" size={60} />
+								<Icon name="arrow-back" color="#fff" size={50} />
 							</Link>
 							<Link to="/forgot-password">
-								<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('4%'), color: 'white' }}>Forgot my password</Text>
+								<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'white' }}>Forgot my password</Text>
 							</Link>
 						</View>
 						<View style={styles.content}>
 							<View style={styles.formContainer}>
-								<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('6%'), color: 'white', paddingBottom: 50 }}>
+								<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('5%'), color: 'white', paddingBottom: 50 }}>
 									Log in
 								</Text>
 								<SearchableDropdown
@@ -116,7 +125,7 @@ export default class Login extends Component {
 									//onItemSelect called after the selection from the dropdown
 									containerStyle={{ paddingBottom: 40 }}
 									//suggestion container style
-									textInputStyle={{ color: 'white', fontSize: hp('3%'), paddingHorizontal: 8 }}
+									textInputStyle={{ color: 'white', fontSize: hp('2%'), paddingHorizontal: 8 }}
 									itemStyle={
 										//single dropdown item style
 										styles.input
@@ -125,7 +134,7 @@ export default class Login extends Component {
 										//text style of a single dropdown item
 										color: 'white',
 										fontFamily: 'Roboto-Regular',
-										fontSize: hp('3%'),
+										fontSize: hp('2%'),
 									}}
 									items={this.state.centers}
 									//mapping of item array
@@ -164,17 +173,17 @@ const styles = StyleSheet.create({
 		paddingTop: hp('1%')
 	},
 	content: {
-		padding: hp('2.3%'),
-		height: hp('85%'),
-		flexDirection: 'row',
+		padding: hp('3%'),
+		height: hp('80%'),
+		flexDirection: 'column',
 		display: 'flex',
 		width: wp('100%'),
 		justifyContent: 'space-around',
-		alignContent: 'center',
+		alignContent: 'flex-start',
 		flexWrap: 'wrap',
 	},
 	formInputs: {
-		width: wp('35%'),
+		width: wp('85%'),
 		paddingBottom: 30
 	},
 	imageBack: {
@@ -190,13 +199,15 @@ const styles = StyleSheet.create({
 	},
 	buttonContainer: {
 		alignItems: 'center',
-		width: wp('35%'),
+		width: wp('90%'),
 		height: hp('50%')
 	},
 	button: {
+		width: wp('30%'),
+		height: hp('5%'),
 		paddingVertical: hp('1%'),
 		paddingHorizontal: wp('4%'),
-		borderRadius: 8,
+		borderRadius: 5,
 		marginBottom: hp('2.5%'),
 	},
 	headerContainer: {
@@ -213,11 +224,11 @@ const styles = StyleSheet.create({
 		color: '#fff',
 		borderColor: '#fff',
 		fontFamily: 'Roboto-Regular',
-		fontSize: hp('3%')
+		fontSize: hp('2%')
 	},
 	textGmail: {
 		color: '#399998',
 		fontFamily: 'Roboto-Regular',
-		fontSize: hp('4%')
+		fontSize: hp('3%')
 	},
 });

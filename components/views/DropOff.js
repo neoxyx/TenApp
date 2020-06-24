@@ -11,6 +11,13 @@ import {
     widthPercentageToDP as wp
 } from 'react-native-responsive-screen';
 
+let customFonts = {
+    'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
+    'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
+    'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
+    'Roboto-Thin': require('../../assets/fonts/Roboto-Thin.ttf'),
+}
+
 export class DropOff extends Component {
     constructor(props) {
         super(props);

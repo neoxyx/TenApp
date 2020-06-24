@@ -47,7 +47,7 @@ export default class CheckMethod extends Component {
 							<View style={styles.content}>
 								<View style={styles.buttonContainer}>
 									<Image style={styles.image} source={require('../../assets/img/logo.png')} />
-									<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('4.8%'), color: 'white', paddingTop: 30, paddingBottom: 30 }}> Welcome to Ten App</Text>
+									<Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3.5%'), color: 'white', paddingTop: 30, paddingBottom: 30 }}> Welcome to Ten App</Text>
 									<Button buttonStyle={styles.button} titleStyle={styles.textGmail} title="Continue with Gmail" />
 									<ButtonOutlined buttonStyle={styles.button} titleStyle={styles.textCreateAccount} title="Create Account" />
 								</View>
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
 		height: hp('50%')
 	},
 	image: {
-		width: wp('20%'),
-		height: hp('13%')
+		width: wp('45%'),
+		height: hp('10%')
 	},
 	button: {
 		paddingVertical: hp('1%'),
@@ -115,11 +115,11 @@ const styles = StyleSheet.create({
 	textCreateAccount: {
 		color: '#fff',
 		fontFamily: 'Roboto-Regular',
-		fontSize: hp('4%')
+		fontSize: hp('2.5%')
 	},
 	textGmail: {
 		color: '#399998',
 		fontFamily: 'Roboto-Regular',
-		fontSize: hp('4%')
+		fontSize: hp('2.5%')
 	},
 });

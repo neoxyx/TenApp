@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import * as Font from 'expo-font';
-let customFonts = {
-    'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
-    'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
-    'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
-    'Roboto-Thin': require('../../assets/fonts/Roboto-Thin.ttf'),
-}
-export class Settings extends Component {
+
+export class PickUp extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -25,11 +20,12 @@ export class Settings extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Settings</Text>
+                <Text>PickUp</Text>
             </View >
         );
     }
 }
+
 
 const styles = StyleSheet.create({
     container: {
