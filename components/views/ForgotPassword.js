@@ -6,6 +6,10 @@ import { Text, Input, Icon } from 'react-native-elements';
 import { Link } from '../../react-router.native';
 import { button as Button } from '../elements/Button';
 import Api from '../../constans/Api';
+import {
+	heightPercentageToDP as hp,
+	widthPercentageToDP as wp
+} from 'react-native-responsive-screen';
 
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
@@ -61,7 +65,7 @@ export default class ForgotPassword extends Component {
 					<View style={styles.container}>
 						<View style={styles.headerContainer}>
 							<Link to="/login">
-								<Icon name="arrow-back" color="#fff" />
+								<Icon name="arrow-back" color="#fff" size={50} />
 							</Link>
 						</View>
 						<View style={styles.formContainer}>
@@ -96,13 +100,13 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		flexDirection: "column",
-		paddingTop: 10
+		paddingTop: hp('1%')
 	},
 	imageBack: {
 		flex: 1,
 		resizeMode: "cover",
 		justifyContent: "center",
-		height: 700
+		height: '100%'
 	},
 	formContainer: {
 		padding: 23,

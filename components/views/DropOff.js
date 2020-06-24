@@ -188,16 +188,16 @@ export class DropOff extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
-                                                size={70}
+                                                source={{ uri: u.child.picture }}
+                                                size={50}
                                             />
                                             <Badge
-                                                badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
-                                                containerStyle={{ position: 'absolute', top: 3, right: 300 }}
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
                                                 status='error'
                                             />
                                             <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
+                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
                                                 <View style={{ flexDirection: 'row' }}>
                                                     <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>ARRIVED</Text>
                                                     <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
@@ -212,16 +212,16 @@ export class DropOff extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={70}
                                             />
                                             <Badge
-                                                badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
-                                                containerStyle={{ position: 'absolute', top: 3, right: 300 }}
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
                                                 status='warning'
                                             />
                                             <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
+                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
                                                 <View style={{ flexDirection: 'row' }}>
                                                     <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>ESTIMATE TIME </Text>
                                                     <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.eta} MIN</Text>
@@ -238,16 +238,16 @@ export class DropOff extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={70}
                                             />
                                             <Badge
-                                                badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
-                                                containerStyle={{ position: 'absolute', top: 3, right: 300 }}
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 265 }}
                                                 status='warning'
                                             />
                                             <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
+                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
                                                 <View style={{ flexDirection: 'row' }}>
                                                     <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>DROP OFF</Text>
                                                     <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
@@ -262,16 +262,16 @@ export class DropOff extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={70}
                                             />
                                             <Badge
-                                                badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
-                                                containerStyle={{ position: 'absolute', top: 3, right: 300 }}
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 265 }}
                                                 status='warning'
                                             />
                                             <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
+                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
                                                 <View style={{ flexDirection: 'row' }}>
                                                     <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>PICK UP</Text>
                                                     <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
@@ -288,16 +288,16 @@ export class DropOff extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={70}
                                             />
                                             <Badge
-                                                badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
-                                                containerStyle={{ position: 'absolute', top: 3, right: 300 }}
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 265 }}
                                                 status='success'
                                             />
                                             <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
+                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
                                                 <View style={{ flexDirection: 'row' }}>
                                                     <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>ARRIVED</Text>
                                                     <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
@@ -312,16 +312,16 @@ export class DropOff extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={70}
                                             />
                                             <Badge
-                                                badgeStyle={{ width: 25, height: 25, borderRadius: 25 }}
-                                                containerStyle={{ position: 'absolute', top: 3, right: 300 }}
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 265 }}
                                                 status='warning'
                                             />
                                             <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2.5%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
+                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
                                                 <View style={{ flexDirection: 'row' }}>
                                                     <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>ESTIMATE TIME</Text>
                                                     <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.eta}</Text>

@@ -12,8 +12,6 @@ import {
 	heightPercentageToDP as hp,
 	widthPercentageToDP as wp
 } from 'react-native-responsive-screen';
-import JwtDecode from 'jwt-decode';
-import { set } from 'react-native-reanimated';
 
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
@@ -190,7 +188,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		resizeMode: "cover",
 		justifyContent: "center",
-		height: hp('100%')
+		height: '100%'
 	},
 	formContainer: {
 		alignItems: 'baseline',

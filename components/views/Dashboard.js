@@ -3,6 +3,7 @@ import { View, StyleSheet, AsyncStorage, Alert, ScrollView, TouchableHighlight, 
 import * as Font from 'expo-font';
 import { Card, Icon, Text, Badge, Overlay, Input, CheckBox } from 'react-native-elements';
 import Api from '../../constans/Api';
+import SearchableDropdown from 'react-native-searchable-dropdown';
 import {
     Avatar
 } from 'react-native-paper';
@@ -10,6 +11,7 @@ import {
     heightPercentageToDP as hp,
     widthPercentageToDP as wp
 } from 'react-native-responsive-screen';
+import { set } from 'react-native-reanimated';
 
 let customFonts = {
     'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
@@ -22,6 +24,9 @@ export class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            first_name: '',
+            last_name: '',
+            idUser: '',
             fontsLoaded: false,
             coming: [],
             commingArrived: [],
@@ -29,6 +34,7 @@ export class Dashboard extends Component {
             processPickup: [],
             registered: [],
             registeredArrived: [],
+            selectedValue: '',
             modalVisible: false,
             picture: '',
             nameChild: '',
@@ -38,13 +44,38 @@ export class Dashboard extends Component {
             checkMask: false,
             temperature: '',
             arrivalTimeHour: '',
-            arrivalTimeMin: ''
+            arrivalTimeMin: '',
+            notes: ''
         }
     }
 
     async _loadFontAsync() {
         await Font.loadAsync(customFonts);
         this.setState({ fontsLoaded: true });
+    }
+    async getMeData() {
+        let userToken = await AsyncStorage.getItem("token");
+        let data = JSON.parse(userToken);
+        let dataMe = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'access-token': data
+            }
+        }
+
+        fetch(Api.url + 'auth/me', dataMe)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ first_name: responseJson.first_name });
+                this.setState({ last_name: responseJson.last_name });
+                this.setState({ idUser: responseJson.id });
+            })
+            .catch((error) => {
+                Alert.alert(error);
+            });
+
     }
     async getComing() {
         let userToken = await AsyncStorage.getItem("token");
@@ -172,8 +203,35 @@ export class Dashboard extends Component {
                 Alert.alert(error);
             });
     }
+    async setStatusInprocess() {
+        let userToken = await AsyncStorage.getItem("token");
+        let data = JSON.parse(userToken);
+        let dataMe = {
+            method: 'PUT',
+            body: JSON.stringify({
+                id: 1,
+                status: 2,
+                recieved_by: this.state.idUser
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'access-token': data
+            }
+        }
+
+        fetch(Api.url + 'api/protocols/status', dataMe)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson);
+            })
+            .catch((error) => {
+                Alert.alert(error);
+            });
+    }
     componentDidMount() {
         this._loadFontAsync();
+        this.getMeData();
         this.getComingArrived();
         this.getComing();
         this.getProcess();
@@ -201,14 +259,15 @@ export class Dashboard extends Component {
                                     return (
                                         <TouchableHighlight
                                             onPress={() => {
-                                                this.setState({ picture: u.child.pucture });
+                                                this.setStatusInprocess();
+                                                this.setState({ picture: u.child.picture });
                                                 this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
                                                 this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
                                                 this.setState({ modalVisible: true });
                                             }}>
                                             <View key={i} style={styles.cardContainer} >
                                                 <Avatar.Image
-                                                    source={{ uri: u.child.pucture }}
+                                                    source={{ uri: u.child.picture }}
                                                     size={50}
                                                 />
                                                 <Badge
@@ -233,7 +292,7 @@ export class Dashboard extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={50}
                                             />
                                             <Badge
@@ -259,7 +318,7 @@ export class Dashboard extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={50}
                                             />
                                             <Badge
@@ -283,7 +342,7 @@ export class Dashboard extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={50}
                                             />
                                             <Badge
@@ -309,7 +368,7 @@ export class Dashboard extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={50}
                                             />
                                             <Badge
@@ -333,7 +392,7 @@ export class Dashboard extends Component {
                                     return (
                                         <View key={i} style={styles.cardContainer}>
                                             <Avatar.Image
-                                                source={{ uri: u.child.pucture }}
+                                                source={{ uri: u.child.picture }}
                                                 size={50}
                                             />
                                             <Badge
@@ -401,7 +460,7 @@ export class Dashboard extends Component {
                                 alignItems: 'center',
                             }}>
                                 <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}>Received by: </Text>
-                                <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Bold' }}>{this.state.nameParent} </Text>
+                                <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Bold' }}>{this.state.first_name + ' ' + this.state.last_name}</Text>
                             </View>
                         </View>
                         <View style={{
@@ -531,7 +590,7 @@ export class Dashboard extends Component {
                                 borderColor: '#399998',
                                 borderRadius: 5
                             }}>
-                                <Input placeholder='Notes'></Input>
+                                <Input placeholder='Notes' onChangeText={value => this.setState({ notes: value })}></Input>
                             </View>
                             <View style={{
                                 flexDirection: 'row',
@@ -547,7 +606,7 @@ export class Dashboard extends Component {
                                     <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    onPress={() => alert('Save data: ' + this.state.checkHand + ' ' + this.state.checkShoe + ' ' + this.state.checkMask + ' ' + this.state.temperature + ' ' + this.state.arrivalTimeHour + ':' + this.state.arrivalTimeMin)}
+                                    onPress={() => alert('Save data: ' + this.state.checkHand + ' ' + this.state.checkShoe + ' ' + this.state.checkMask + ' ' + this.state.temperature + ' ' + this.state.arrivalTimeHour + ':' + this.state.arrivalTimeMin + ' Notes: ' + this.state.notes)}
                                     style={{ width: wp('7%'), backgroundColor: '#399998', alignItems: 'center', borderRadius: 7 }}>
                                     <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>Save</Text>
                                 </TouchableOpacity>

@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		resizeMode: "cover",
 		justifyContent: "center",
-		height: hp('100%')
+		height: '100%'
 	},
 	content: {
 		padding: hp('2.3%'),
@@ -87,16 +87,17 @@ const styles = StyleSheet.create({
 	},
 	buttonContainer: {
 		alignItems: 'center',
-		width: wp('30%'),
+		width: wp('100%'),
 		height: hp('50%')
 	},
 	image: {
-		width: wp('45%'),
-		height: hp('10%')
+		width: 175,
+		height: 70
 	},
 	button: {
 		paddingVertical: hp('1%'),
-		width: wp('30%'),
+		width: wp('50%'),
+		height: hp('7%'),
 		borderRadius: 8,
 		textAlign: 'center',
 		marginBottom: hp('1.0%'),

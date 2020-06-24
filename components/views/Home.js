@@ -270,8 +270,8 @@ const styles = StyleSheet.create({
 		fontFamily: 'Roboto-Regular'
 	},
 	image: {
-		width: wp('9%'),
-		height: hp('5%')
+		width: 90,
+		height: 40
 	},
 	profileImg: {
 		width: wp('8%'),
