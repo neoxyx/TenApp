@@ -3,7 +3,6 @@ import { View, StyleSheet, AsyncStorage, Alert, ScrollView, TouchableHighlight, 
 import * as Font from 'expo-font';
 import { Card, Icon, Text, Badge, Overlay, Input, CheckBox } from 'react-native-elements';
 import Api from '../../constans/Api';
-import SearchableDropdown from 'react-native-searchable-dropdown';
 import {
     Avatar
 } from 'react-native-paper';
@@ -39,16 +38,15 @@ export class Dashboard extends Component {
             picture: '',
             nameChild: '',
             nameParent: '',
-            checkHand: false,
-            checkShoe: false,
-            checkMask: false,
+            protocolStatusId: '',
+            check: false,
             temperature: '',
             arrivalTimeHour: '',
             arrivalTimeMin: '',
-            notes: ''
+            notes: '',
+            details: []
         }
     }
-
     async _loadFontAsync() {
         await Font.loadAsync(customFonts);
         this.setState({ fontsLoaded: true });
@@ -209,7 +207,7 @@ export class Dashboard extends Component {
         let dataMe = {
             method: 'PUT',
             body: JSON.stringify({
-                id: 1,
+                id: this.state.protocolStatusId,
                 status: 2,
                 recieved_by: this.state.idUser
             }),
@@ -223,12 +221,40 @@ export class Dashboard extends Component {
         fetch(Api.url + 'api/protocols/status', dataMe)
             .then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson);
+                this.setState({ details: responseJson.protocol.protocolDetails });
             })
             .catch((error) => {
                 Alert.alert(error);
             });
     }
+
+    async sendAnswers() {
+        let userToken = await AsyncStorage.getItem("token");
+        let data = JSON.parse(userToken);
+        let dataMe = {
+            method: 'POST',
+            body: JSON.stringify({
+                protocolStatus: this.state.protocolStatusId,
+                protocolDetail: 2,
+                recieved_by: this.state.idUser
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'access-token': data
+            }
+        }
+
+        fetch(Api.url + 'api/protocols/answer', dataMe)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ details: responseJson.protocol.protocolDetails });
+            })
+            .catch((error) => {
+                Alert.alert(error);
+            });
+    }
+
     componentDidMount() {
         this._loadFontAsync();
         this.getMeData();
@@ -243,6 +269,52 @@ export class Dashboard extends Component {
         const toggleOverlay = () => {
             this.setState({ modalVisible: false });
         };
+        const Check = (props) => {
+            return <CheckBox
+                checked={props.value}
+                onPress={() => this.setState({ check: !props.value })}
+            />;
+        }
+        const details = this.state.details;
+        const items = details.map((item, j) =>
+            <View key={j} style={{
+                flexDirection: 'row',
+                width: '100%',
+                height: '20%',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: '#399998'
+            }}><Icon
+                    style={{ marginLeft: 10 }}
+                    name='handshake-o'
+                    size={40}
+                    type='font-awesome'
+                    color='#399998' />
+                {item.activity_result_type == 'bool' && (
+                    <>
+                        <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 10, marginRight: 45 }}>{item.activity_name}</Text>
+                        <Check value={this.state.check} id={item.id} />
+                    </>
+                )
+                }
+
+                {item.activity_result_type == 'text' && (
+                    <>
+                        <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 10, marginRight: 45 }}>{item.activity_name}</Text>
+                        <Input containerStyle={{ width: wp('5%'), marginTop: hp('2%') }} onChangeText={value => this.setState({ temperature: value })}></Input>
+                    </>
+                )}
+                {item.activity_result_type == 'time' && (
+                    <>
+                        <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 10, marginRight: 45 }}>{item.activity_name}</Text>
+                        <Input placeholder='07' containerStyle={{ width: wp('4%'), marginTop: hp('2%') }} onChangeText={value => this.setState({ arrivalTimeHour: value })}></Input>
+                        <Text>:</Text>
+                        <Input placeholder='23' containerStyle={{ width: wp('4%'), marginTop: hp('2%') }} onChangeText={value => this.setState({ arrivalTimeMin: value })}></Input>
+
+                    </>
+                )}
+            </View >
+        );
         return (
             <ScrollView>
                 <View style={styles.container}>
@@ -263,6 +335,7 @@ export class Dashboard extends Component {
                                                 this.setState({ picture: u.child.picture });
                                                 this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
                                                 this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
+                                                this.setState({ protocolStatusId: u.id });
                                                 this.setState({ modalVisible: true });
                                             }}>
                                             <View key={i} style={styles.cardContainer} >
@@ -316,24 +389,34 @@ export class Dashboard extends Component {
                             {
                                 this.state.process.map((u, i) => {
                                     return (
-                                        <View key={i} style={styles.cardContainer}>
-                                            <Avatar.Image
-                                                source={{ uri: u.child.picture }}
-                                                size={50}
-                                            />
-                                            <Badge
-                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                                status="warning"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
-                                            />
-                                            <View style={{ flexDirection: 'column' }}>
-                                                <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>DROP OFF</Text>
-                                                    <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
+                                        <TouchableHighlight
+                                            onPress={() => {
+                                                this.setStatusInprocess();
+                                                this.setState({ picture: u.child.picture });
+                                                this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
+                                                this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
+                                                this.setState({ protocolStatusId: u.id });
+                                                this.setState({ modalVisible: true });
+                                            }}>
+                                            <View key={i} style={styles.cardContainer}>
+                                                <Avatar.Image
+                                                    source={{ uri: u.child.picture }}
+                                                    size={50}
+                                                />
+                                                <Badge
+                                                    badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                    status="warning"
+                                                    containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                                />
+                                                <View style={{ flexDirection: 'column' }}>
+                                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), paddingLeft: 20 }} >{u.child.fname + ' ' + u.child.lname}</Text>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('1.5%'), paddingLeft: 20 }}>DROP OFF</Text>
+                                                        <Text style={{ fontFamily: 'Roboto-Thin', fontSize: hp('1.7%'), paddingLeft: 20 }}>{u.date}</Text>
+                                                    </View>
                                                 </View>
                                             </View>
-                                        </View>
+                                        </TouchableHighlight>
                                     );
                                 })
                             }
@@ -484,101 +567,7 @@ export class Dashboard extends Component {
                                 borderWidth: 1,
                                 borderColor: '#399998'
                             }}>
-                                <View style={{
-                                    flexDirection: 'row',
-                                    width: '100%',
-                                    height: '20%',
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: '#399998'
-                                }}><Icon
-                                        style={{ marginLeft: 10 }}
-                                        name='handshake-o'
-                                        size={40}
-                                        type='font-awesome'
-                                        color='#399998' />
-                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 10, marginRight: 45 }}>Handwashing</Text>
-                                    <CheckBox
-                                        checked={this.state.checkHand}
-                                        onPress={() => this.setState({ checkHand: !this.state.checkHand })}
-                                    />
-                                </View>
-                                <View style={{
-                                    flexDirection: 'row',
-                                    width: '100%',
-                                    height: '20%',
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: '#399998'
-                                }}>
-                                    <Icon
-                                        style={{ marginLeft: 10 }}
-                                        name='shower'
-                                        size={40}
-                                        type='font-awesome'
-                                        color='#399998' />
-                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 10, marginRight: 20 }}>Shoe Desinfection</Text>
-                                    <CheckBox
-                                        checked={this.state.checkShoe}
-                                        onPress={() => this.setState({ checkShoe: !this.state.checkShoe })}
-                                    />
-                                </View>
-                                <View style={{
-                                    flexDirection: 'row',
-                                    width: '100%',
-                                    height: '20%',
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: '#399998'
-                                }}>
-                                    <Icon
-                                        style={{ marginLeft: 10 }}
-                                        name='smile-o'
-                                        size={40}
-                                        type='font-awesome'
-                                        color='#399998' />
-                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 20, marginRight: 25 }}>Use of face Mask</Text>
-                                    <CheckBox
-                                        checked={this.state.checkMask}
-                                        onPress={() => this.setState({ checkMask: !this.state.checkMask })}
-                                    />
-                                </View>
-                                <View style={{
-                                    flexDirection: 'row',
-                                    width: '100%',
-                                    height: '20%',
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: '#399998'
-                                }}>
-                                    <Icon
-                                        style={{ marginLeft: 10 }}
-                                        name='thermometer-three-quarters'
-                                        size={40}
-                                        type='font-awesome'
-                                        color='#399998' />
-                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 30, marginRight: 55 }}>Temperature</Text>
-                                    <Input placeholder='99°F' containerStyle={{ width: wp('5%'), marginTop: hp('2%') }} onChangeText={value => this.setState({ temperature: value })}></Input>
-                                </View>
-                                <View style={{
-                                    flexDirection: 'row',
-                                    width: '100%',
-                                    height: '20%',
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: '#399998'
-                                }}>
-                                    <Icon
-                                        style={{ marginLeft: 10 }}
-                                        name='thermometer-three-quarters'
-                                        size={40}
-                                        type='font-awesome'
-                                        color='#399998' />
-                                    <Text style={{ fontFamily: 'Roboto-Bold', fontSize: hp('2%'), marginLeft: 30, marginRight: 20 }}>Arrival Time</Text>
-                                    <Input placeholder='07' containerStyle={{ width: wp('4%'), marginTop: hp('2%') }} onChangeText={value => this.setState({ arrivalTimeHour: value })}></Input>
-                                    <Text>:</Text>
-                                    <Input placeholder='23' containerStyle={{ width: wp('4%'), marginTop: hp('2%') }} onChangeText={value => this.setState({ arrivalTimeMin: value })}></Input>
-                                </View>
+                                {items}
                             </View>
                             <View style={{
                                 width: '90%',
@@ -606,7 +595,7 @@ export class Dashboard extends Component {
                                     <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    onPress={() => alert('Save data: ' + this.state.checkHand + ' ' + this.state.checkShoe + ' ' + this.state.checkMask + ' ' + this.state.temperature + ' ' + this.state.arrivalTimeHour + ':' + this.state.arrivalTimeMin + ' Notes: ' + this.state.notes)}
+                                    onPress={() => alert('Save data: ' + this.state.check + ' ' + this.state.temperature + ' ' + this.state.arrivalTimeHour + ':' + this.state.arrivalTimeMin + ' Notes: ' + this.state.notes)}
                                     style={{ width: wp('7%'), backgroundColor: '#399998', alignItems: 'center', borderRadius: 7 }}>
                                     <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>Save</Text>
                                 </TouchableOpacity>
