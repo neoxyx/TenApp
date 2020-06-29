@@ -99,7 +99,7 @@ export class DropOff extends Component {
                             style={{ width: wp('60%'), marginHorizontal: wp('2%') }}
                             minimumTrackTintColor='#399998'
                             maximumTrackTintColor='#399998'
-                            step='10'
+                            step={10}
                             thumbTintColor='white'
                             maximumValue={60}
                             value={this.state.time}
