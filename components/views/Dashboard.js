@@ -39,7 +39,7 @@ export class Dashboard extends Component {
             nameChild: '',
             nameParent: '',
             protocolStatusId: '',
-            check: false,
+            check: [{ id: '', value: '' }],
             temperature: '',
             arrivalTimeHour: '',
             arrivalTimeMin: '',
