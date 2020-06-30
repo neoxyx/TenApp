@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, AsyncStorage, Alert, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
 import * as Font from 'expo-font';
-import { Card, Text, Overlay, Input } from 'react-native-elements';
+import { Card, Text, Overlay, Input, Icon } from 'react-native-elements';
 import Api from '../../../constans/Api';
 import {
     Avatar
@@ -94,7 +94,7 @@ export class History extends Component {
         return (
             <ScrollView>
                 <View style={styles.container}>
-                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'space-around' }}>
                         <View style={styles.headerContainer}>
                             <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>Drop off / Pick up History</Text>
                         </View>
@@ -122,6 +122,7 @@ export class History extends Component {
                                                         <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), paddingLeft: 20 }}>Description</Text>
                                                     </View>
                                                 </View>
+                                                <Icon name="angle-right" color="gray" type="font-awesome" size={40} style={{ marginLeft: 70 }} />
                                             </View>
                                         </TouchableHighlight>
                                     );
@@ -131,7 +132,7 @@ export class History extends Component {
                     </View>
                 </View>
                 <Overlay
-                    overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('90%'), height: hp('75%') }}
+                    overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('55%'), height: hp('80%') }}
                     isVisible={this.state.modalVisible}
                     onBackdropPress={toggleOverlay}
                 >
@@ -140,12 +141,12 @@ export class History extends Component {
                             width: '84.6%',
                             alignItems: 'center'
                         }}>
-                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>Drop off / Pick up Details</Text>
+                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('4%'), color: 'gray' }}>Drop off / Pick up Details</Text>
                         </View>
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', marginLeft: wp('15%') }}>
+                    <View style={{ flexDirection: 'row', alignContent: 'space-around', alignItems: 'center' }}>
                         <View style={{
-                            width: '84.6%',
+                            width: '100%',
                             alignItems: 'center',
                             marginTop: 30
                         }}>
@@ -197,20 +198,20 @@ export class History extends Component {
                             </View>
                             <View style={{
                                 marginTop: hp('2%'),
-                                width: wp('70%'),
-                                height: hp('15%'),
+                                width: '70%',
+                                height: hp('20%'),
                                 alignItems: 'center',
                                 borderWidth: 1,
                                 borderColor: '#399998',
-                                borderRadius: 5
+                                borderRadius: 10
                             }}>
                                 <Input placeholder='Notes' onChangeText={value => this.setState({ notes: value })}></Input>
                             </View>
                             <View>
                                 <TouchableOpacity
-                                    onPress={() => alert('go back')}
-                                    style={{ width: wp('40%'), height: hp('6%'), backgroundColor: '#399998', alignItems: 'center', justifyContent: 'center', borderRadius: 7, marginTop: hp('2%') }}>
-                                    <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: '#fff' }}>Go Back</Text>
+                                    onPress={toggleOverlay}
+                                    style={{ width: wp('20%'), height: hp('10%'), backgroundColor: '#399998', alignItems: 'center', justifyContent: 'center', borderRadius: 7, marginTop: hp('2%') }}>
+                                    <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3.5%'), color: '#fff' }}>Go Back</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -224,7 +225,6 @@ export class History extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         paddingTop: 30,
         flexDirection: "column",
         alignItems: 'center'
