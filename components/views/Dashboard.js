@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage, Alert, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, AsyncStorage, Alert, ScrollView, Switch, TouchableHighlight, TouchableOpacity } from 'react-native';
 import * as Font from 'expo-font';
-import { Card, Icon, Text, Badge, Overlay, Input, CheckBox } from 'react-native-elements';
+import { Card, Icon, Text, Badge, Overlay, Input } from 'react-native-elements';
 import Api from '../../constans/Api';
+import Status from '../../constans/Status';
 import { Avatar } from 'react-native-paper';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
@@ -29,6 +30,7 @@ export class Dashboard extends Component {
             registeredArrived: [],
             selectedValue: '',
             modalVisible: false,
+            modalControl: false,
             picture: '',
             nameChild: '',
             nameParent: '',
@@ -194,14 +196,14 @@ export class Dashboard extends Component {
                 Alert.alert(error);
             });
     }
-    async setStatusInprocess() {
+    async setStatus(status) {
         let userToken = await AsyncStorage.getItem('token');
         let data = JSON.parse(userToken);
         let dataMe = {
             method: 'PUT',
             body: JSON.stringify({
                 id: this.state.protocolStatusId,
-                status: 2,
+                status: status,
                 recieved_by: this.state.idUser,
             }),
             headers: {
@@ -222,21 +224,22 @@ export class Dashboard extends Component {
                         return pd;
                     }),
                 });
+                this.componentDidMount();
             })
             .catch((error) => {
                 Alert.alert(error);
             });
     }
 
-    async sendAnswers() {
+    async sendAnswers(idDetail, answer) {
         let userToken = await AsyncStorage.getItem('token');
         let data = JSON.parse(userToken);
         let dataMe = {
             method: 'POST',
             body: JSON.stringify({
                 protocolStatus: this.state.protocolStatusId,
-                protocolDetail: 2,
-                recieved_by: this.state.idUser,
+                protocolDetail: idDetail,
+                answer: answer,
             }),
             headers: {
                 Accept: 'application/json',
@@ -248,7 +251,7 @@ export class Dashboard extends Component {
         fetch(Api.url + 'api/protocols/answer', dataMe)
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState({ details: responseJson.protocol.protocolDetails });
+                console.log(responseJson);
             })
             .catch((error) => {
                 Alert.alert(error);
@@ -256,7 +259,11 @@ export class Dashboard extends Component {
     }
 
     sendDetailsAnswers() {
-        console.log(this.state.details);
+        this.state.details.map((item, j) => {
+            this.sendAnswers(item.id, item.value);
+            this.setStatus(Status.R);
+            this.componentDidMount();
+        })
     }
 
     componentDidMount() {
@@ -288,11 +295,6 @@ export class Dashboard extends Component {
             else val = `${valueToSet}:${m}`;
             setProtocolDetailAnswerValue(index, val);
         };
-        const Check = (props) => {
-            return (
-                <CheckBox checked={props.value} />
-            );
-        }
         const items = this.state.details.map((item, j) => {
             const { value: Value } = item;
             return (
@@ -315,12 +317,12 @@ export class Dashboard extends Component {
                                     fontFamily: 'Roboto-Bold',
                                     fontSize: hp('2%'),
                                     marginLeft: 20,
-                                    marginRight: 45,
+                                    marginRight: 65,
                                 }}
                             >
                                 {item.activity_name}
                             </Text>
-                            <Check value={Value} onPress={(value) => { setProtocolDetailAnswerValue(j, value) }} />
+                            <Switch value={Value} onValueChange={(value) => setProtocolDetailAnswerValue(j, value)} />
                         </>
                     )}
 
@@ -331,7 +333,7 @@ export class Dashboard extends Component {
                                     fontFamily: 'Roboto-Bold',
                                     fontSize: hp('2%'),
                                     marginLeft: 30,
-                                    marginRight: 45,
+                                    marginRight: 65,
                                 }}
                             >
                                 {item.activity_name}
@@ -356,12 +358,14 @@ export class Dashboard extends Component {
                                 {item.activity_name}
                             </Text>
                             <Input
+                                value={Value}
                                 placeholder="07"
                                 containerStyle={{ width: wp('4%'), marginTop: hp('2%') }}
                                 onChangeText={(hour) => setTimeValue(j, Value, hour, 'h')}
                             ></Input>
                             <Text>:</Text>
                             <Input
+                                value={Value}
                                 placeholder="23"
                                 containerStyle={{ width: wp('4%'), marginTop: hp('2%') }}
                                 onChangeText={(min) => setTimeValue(j, Value, min, 'm')}
@@ -391,12 +395,12 @@ export class Dashboard extends Component {
                                 return (
                                     <TouchableHighlight
                                         onPress={() => {
-                                            this.setStatusInprocess();
+                                            this.setStatus(Status.CA);
                                             this.setState({ picture: u.child.picture });
                                             this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
                                             this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
                                             this.setState({ protocolStatusId: u.id });
-                                            this.setState({ modalVisible: true });
+                                            this.setState({ modalControl: false, modalVisible: true });
                                         }}
                                     >
                                         <View key={i} style={styles.cardContainer}>
@@ -491,56 +495,45 @@ export class Dashboard extends Component {
                         >
                             {this.state.process.map((u, i) => {
                                 return (
-                                    <TouchableHighlight
-                                        onPress={() => {
-                                            this.setStatusInprocess();
-                                            this.setState({ picture: u.child.picture });
-                                            this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
-                                            this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
-                                            this.setState({ protocolStatusId: u.id });
-                                            this.setState({ modalVisible: true });
-                                        }}
-                                    >
-                                        <View key={i} style={styles.cardContainer}>
-                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                            <Badge
-                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                                status="warning"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
-                                            />
-                                            <View style={{ flexDirection: 'column' }}>
+                                    <View key={i} style={styles.cardContainer}>
+                                        <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                        <Badge
+                                            badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                            status="warning"
+                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                        />
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <Text
+                                                style={{
+                                                    fontFamily: 'Roboto-Bold',
+                                                    fontSize: hp('2%'),
+                                                    paddingLeft: 20,
+                                                }}
+                                            >
+                                                {u.child.fname + ' ' + u.child.lname}
+                                            </Text>
+                                            <View style={{ flexDirection: 'row' }}>
                                                 <Text
                                                     style={{
                                                         fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('2%'),
+                                                        fontSize: hp('1.5%'),
                                                         paddingLeft: 20,
                                                     }}
                                                 >
-                                                    {u.child.fname + ' ' + u.child.lname}
-                                                </Text>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Bold',
-                                                            fontSize: hp('1.5%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        DROP OFF
+                                                    DROP OFF
 													</Text>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Thin',
-                                                            fontSize: hp('1.7%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        {u.date}
-                                                    </Text>
-                                                </View>
+                                                <Text
+                                                    style={{
+                                                        fontFamily: 'Roboto-Thin',
+                                                        fontSize: hp('1.7%'),
+                                                        paddingLeft: 20,
+                                                    }}
+                                                >
+                                                    {u.date}
+                                                </Text>
                                             </View>
                                         </View>
-                                    </TouchableHighlight>
+                                    </View>
                                 );
                             })}
                             {this.state.processPickup.map((u, i) => {
@@ -593,115 +586,137 @@ export class Dashboard extends Component {
                         >
                             {this.state.registeredArrived.map((u, i) => {
                                 return (
-                                    <View key={i} style={styles.cardContainer}>
-                                        <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                        <Badge
-                                            badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                            status="success"
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
-                                        />
-                                        <View style={{ flexDirection: 'column' }}>
-                                            <Text
-                                                style={{
-                                                    fontFamily: 'Roboto-Bold',
-                                                    fontSize: hp('2%'),
-                                                    paddingLeft: 20,
-                                                }}
-                                            >
-                                                {u.child.fname + ' ' + u.child.lname}
-                                            </Text>
-                                            <View style={{ flexDirection: 'row' }}>
+                                    <TouchableHighlight
+                                        onPress={() => {
+                                            this.setStatus(Status.RA);
+                                            this.setState({ picture: u.child.picture });
+                                            this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
+                                            this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
+                                            this.setState({ protocolStatusId: u.id });
+                                            this.setState({ modalControl: true, modalVisible: true });
+                                        }}
+                                    >
+                                        <View key={i} style={styles.cardContainer}>
+                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                            <Badge
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                status="success"
+                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                            />
+                                            <View style={{ flexDirection: 'column' }}>
                                                 <Text
                                                     style={{
                                                         fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('1.5%'),
+                                                        fontSize: hp('2%'),
                                                         paddingLeft: 20,
                                                     }}
                                                 >
-                                                    ARRIVED
-												</Text>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Thin',
-                                                        fontSize: hp('1.7%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.date}
+                                                    {u.child.fname + ' ' + u.child.lname}
                                                 </Text>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('1.5%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        ARRIVED
+												</Text>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Thin',
+                                                            fontSize: hp('1.7%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.date}
+                                                    </Text>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
+                                    </TouchableHighlight>
                                 );
                             })}
                             {this.state.registered.map((u, i) => {
                                 return (
-                                    <View key={i} style={styles.cardContainer}>
-                                        <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                        <Badge
-                                            badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                            status="success"
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
-                                        />
-                                        <View style={{ flexDirection: 'column' }}>
-                                            <Text
-                                                style={{
-                                                    fontFamily: 'Roboto-Bold',
-                                                    fontSize: hp('2%'),
-                                                    paddingLeft: 20,
-                                                }}
-                                            >
-                                                {u.child.fname + ' ' + u.child.lname}
-                                            </Text>
-                                            <View style={{ flexDirection: 'row' }}>
+                                    <TouchableHighlight
+                                        onPress={() => {
+                                            this.setStatus(Status.RA);
+                                            this.setState({ picture: u.child.picture });
+                                            this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
+                                            this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
+                                            this.setState({ protocolStatusId: u.id });
+                                            this.setState({ modalControl: true, modalVisible: true });
+                                        }}
+                                    >
+                                        <View key={i} style={styles.cardContainer}>
+                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                            <Badge
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                status="success"
+                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                            />
+                                            <View style={{ flexDirection: 'column' }}>
                                                 <Text
                                                     style={{
                                                         fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('1.5%'),
+                                                        fontSize: hp('2%'),
                                                         paddingLeft: 20,
                                                     }}
                                                 >
-                                                    ESTIMATE TIME
-												</Text>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Thin',
-                                                        fontSize: hp('1.7%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.eta}
+                                                    {u.child.fname + ' ' + u.child.lname}
                                                 </Text>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('1.5%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        ESTIMATE TIME
+												</Text>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Thin',
+                                                            fontSize: hp('1.7%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.eta}
+                                                    </Text>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
+                                    </TouchableHighlight>
                                 );
                             })}
                         </Card>
                     </View>
                 </View>
                 <Overlay
-                    overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('70%'), height: hp('70%') }}
+                    overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('80%'), height: hp('70%') }}
                     isVisible={this.state.modalVisible}
                     onBackdropPress={toggleOverlay}
                 >
-                    <View style={{ flexDirection: 'row', paddingTop: hp('5%'), marginLeft: wp('10%') }}>
-                        <View
-                            style={{
-                                width: '84.6%',
-                                alignItems: 'center',
-                            }}
-                        >
+                    <View style={{ flexDirection: 'column', alignItems: 'center', alignContent: 'center' }}>
+                        {this.state.modalControl == false && (
                             <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>
                                 Input Protocol
-							</Text>
-                        </View>
+                            </Text>
+                        )}
+                        {this.state.modalControl == true && (
+                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>
+                                Register Details
+                            </Text>
+                        )}
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'row', marginLeft: wp('10%') }}>
+                    <View style={{ flex: 1, flexDirection: 'row', marginLeft: wp('5%') }}>
                         <View
                             style={{
-                                width: '42%',
-                                height: '80%',
+                                width: wp('30%'),
+                                height: hp('80%'),
                                 paddingTop: 40,
                             }}
                         >
@@ -756,17 +771,18 @@ export class Dashboard extends Component {
                         </View>
                         <View
                             style={{
-                                marginTop: '5%',
-                                width: '0.6%',
-                                height: '83%',
+                                marginTop: hp('5%'),
+                                marginLeft: wp('3%'),
+                                width: wp('0.5%'),
+                                height: hp('50%'),
                                 backgroundColor: '#399998',
                             }}
                         ></View>
                         <View
                             style={{
-                                marginTop: '1%',
-                                width: '42%',
-                                height: '80%',
+                                marginTop: hp('1%'),
+                                width: wp('30%'),
+                                height: hp('50%'),
                             }}
                         >
                             <View
@@ -809,35 +825,54 @@ export class Dashboard extends Component {
                                     alignItems: 'center',
                                 }}
                             >
-                                <TouchableOpacity
-                                    onPress={() => alert('Cancel')}
-                                    style={{
-                                        width: wp('7%'),
-                                        backgroundColor: '#399998',
-                                        alignItems: 'center',
-                                        marginRight: wp('1%'),
-                                        borderRadius: 7,
-                                    }}
-                                >
-                                    <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
-                                        Cancel
+                                {this.state.modalControl == false && (
+                                    <>
+                                        <TouchableOpacity
+                                            onPress={() => alert('Cancel')}
+                                            style={{
+                                                width: wp('7%'),
+                                                backgroundColor: '#399998',
+                                                alignItems: 'center',
+                                                marginRight: wp('1%'),
+                                                borderRadius: 7,
+                                            }}
+                                        >
+                                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                                Cancel
 									</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        this.sendDetailsAnswers()
-                                    }
-                                    style={{
-                                        width: wp('7%'),
-                                        backgroundColor: '#399998',
-                                        alignItems: 'center',
-                                        borderRadius: 7,
-                                    }}
-                                >
-                                    <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
-                                        Save
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                this.sendDetailsAnswers(), toggleOverlay
+                                            }
+                                            style={{
+                                                width: wp('7%'),
+                                                backgroundColor: '#399998',
+                                                alignItems: 'center',
+                                                borderRadius: 7,
+                                            }}
+                                        >
+                                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                                Save
 									</Text>
-                                </TouchableOpacity>
+                                        </TouchableOpacity>
+                                    </>
+                                )}
+                                {this.state.modalControl == true && (
+                                    <TouchableOpacity
+                                        onPress={toggleOverlay}
+                                        style={{
+                                            width: wp('7%'),
+                                            backgroundColor: '#399998',
+                                            alignItems: 'center',
+                                            borderRadius: 7,
+                                        }}
+                                    >
+                                        <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                            Go Back
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
                             </View>
                         </View>
                     </View>
