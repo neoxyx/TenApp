@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Expo from 'expo';
+import { AppLoading } from 'expo';
 import * as ExpoPixi from 'expo-pixi';
-import { Image, Button, Platform, AppState, View, StyleSheet, AsyncStorage, Alert, ScrollView, Switch, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { Image, Button, Platform, AppState, View, StyleSheet, AsyncStorage, Alert, ScrollView, Switch, TouchableHighlight, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as Font from 'expo-font';
 import { Card, Icon, Text, Badge, Overlay, Input } from 'react-native-elements';
 import Api from '../../constans/Api';
@@ -67,15 +67,6 @@ export class Dashboard extends Component {
             details: [],
         };
     }
-    handleAppStateChangeAsync = nextAppState => {
-        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-            if (isAndroid && this.sketch) {
-                this.setState({ appState: nextAppState, id: uuidv4(), lines: this.sketch.lines });
-                return;
-            }
-        }
-        this.setState({ appState: nextAppState });
-    };
     async _loadFontAsync() {
         await Font.loadAsync(customFonts);
         this.setState({ fontsLoaded: true });
@@ -291,6 +282,15 @@ export class Dashboard extends Component {
             });
     }
 
+    async _cacheResourcesAsync() {
+        const images = [require('../../assets/img/logo.png')];
+
+        const cacheImages = images.map(image => {
+            return Asset.fromModule(image).downloadAsync();
+        });
+        return Promise.all(cacheImages);
+    }
+
     sendDetailsAnswers() {
         this.state.details.map((item, j) => {
             this.sendAnswers(item.id, item.value);
@@ -405,563 +405,569 @@ export class Dashboard extends Component {
                 </View>
             );
         });
-        return (
-            <ScrollView>
-                <View style={styles.container}>
-                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <View style={styles.headerContainer}>
-                            <Icon name="home" size={hp('6.5%')} color="gray" />
-                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('5%'), color: 'gray' }}>
-                                Incoming Dashboard
+        if (this.state.fontsLoaded) {
+            return (
+                <ScrollView>
+                    <View style={styles.container}>
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                            <View style={styles.headerContainer}>
+                                <Icon name="home" size={hp('6.5%')} color="gray" />
+                                <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('5%'), color: 'gray' }}>
+                                    Incoming Dashboard
 							</Text>
+                            </View>
+                        </View>
+                        <View style={styles.headerContainer}>
+                            <Card
+                                title="Coming"
+                                titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                            >
+                                {this.state.commingArrived.map((u, i) => {
+                                    return (
+                                        <TouchableHighlight
+                                            onPress={() => {
+                                                this.setStatus(Status.CA);
+                                                this.setState({ picture: u.child.picture });
+                                                this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
+                                                this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
+                                                this.setState({ protocolStatusId: u.id });
+                                                this.setState({ modalControl: false, modalVisible: true });
+                                            }}
+                                        >
+                                            <View key={i} style={styles.cardContainer}>
+                                                <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                                <Badge
+                                                    badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                    status="error"
+                                                    containerStyle={{ position: 'absolute', top: 3, right: wp('18%') }}
+                                                />
+                                                <View style={{ flexDirection: 'column' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('2%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.child.fname + ' ' + u.child.lname}
+                                                    </Text>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text
+                                                            style={{
+                                                                fontFamily: 'Roboto-Bold',
+                                                                fontSize: hp('1.5%'),
+                                                                paddingLeft: 20,
+                                                            }}
+                                                        >
+                                                            ARRIVED
+													</Text>
+                                                        <Text
+                                                            style={{
+                                                                fontFamily: 'Roboto-Thin',
+                                                                fontSize: hp('1.7%'),
+                                                                paddingLeft: 20,
+                                                            }}
+                                                        >
+                                                            {u.date}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </TouchableHighlight>
+                                    );
+                                })}
+                                {this.state.coming.map((u, i) => {
+                                    return (
+                                        <View key={i} style={styles.cardContainer}>
+                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                            <Badge
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: wp('18%') }}
+                                                status="warning"
+                                            />
+                                            <View style={{ flexDirection: 'column' }}>
+                                                <Text
+                                                    style={{
+                                                        fontFamily: 'Roboto-Bold',
+                                                        fontSize: hp('2%'),
+                                                        paddingLeft: 20,
+                                                    }}
+                                                >
+                                                    {u.child.fname + ' ' + u.child.lname}
+                                                </Text>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('1.5%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        ESTIMATE TIME{' '}
+                                                    </Text>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Thin',
+                                                            fontSize: hp('1.7%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.eta} MIN
+												</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    );
+                                })}
+                            </Card>
+                            <Card
+                                title="In Process"
+                                titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                            >
+                                {this.state.process.map((u, i) => {
+                                    return (
+                                        <View key={i} style={styles.cardContainer}>
+                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                            <Badge
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: wp('19%') }}
+                                                status="warning"
+                                            />
+                                            <View style={{ flexDirection: 'column' }}>
+                                                <Text
+                                                    style={{
+                                                        fontFamily: 'Roboto-Bold',
+                                                        fontSize: hp('2%'),
+                                                        paddingLeft: 20,
+                                                    }}
+                                                >
+                                                    {u.child.fname + ' ' + u.child.lname}
+                                                </Text>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('1.5%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        DROP OFF
+													</Text>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Thin',
+                                                            fontSize: hp('1.7%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.date}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    );
+                                })}
+                                {this.state.processPickup.map((u, i) => {
+                                    return (
+                                        <View key={i} style={styles.cardContainer}>
+                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                            <Badge
+                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                status="warning"
+                                                containerStyle={{ position: 'absolute', top: 3, right: wp('19%') }}
+                                            />
+                                            <View style={{ flexDirection: 'column' }}>
+                                                <Text
+                                                    style={{
+                                                        fontFamily: 'Roboto-Bold',
+                                                        fontSize: hp('2%'),
+                                                        paddingLeft: 20,
+                                                    }}
+                                                >
+                                                    {u.child.fname + ' ' + u.child.lname}
+                                                </Text>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('1.5%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        PICK UP
+												</Text>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Thin',
+                                                            fontSize: hp('1.7%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.date}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    );
+                                })}
+                            </Card>
+                            <Card
+                                title="Registered"
+                                titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                            >
+                                {this.state.registeredArrived.map((u, i) => {
+                                    return (
+                                        <TouchableHighlight
+                                            onPress={() => {
+                                                this.setStatus(Status.RA);
+                                                this.setState({ picture: u.child.picture });
+                                                this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
+                                                this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
+                                                this.setState({ protocolStatusId: u.id });
+                                                this.setState({ modalControl: true, modalVisible: true });
+                                            }}
+                                        >
+                                            <View key={i} style={styles.cardContainer}>
+                                                <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                                <Badge
+                                                    badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                    status="success"
+                                                    containerStyle={{ position: 'absolute', top: 3, right: wp('18%') }}
+                                                />
+                                                <View style={{ flexDirection: 'column' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('2%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.child.fname + ' ' + u.child.lname}
+                                                    </Text>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text
+                                                            style={{
+                                                                fontFamily: 'Roboto-Bold',
+                                                                fontSize: hp('1.5%'),
+                                                                paddingLeft: 20,
+                                                            }}
+                                                        >
+                                                            ARRIVED
+												</Text>
+                                                        <Text
+                                                            style={{
+                                                                fontFamily: 'Roboto-Thin',
+                                                                fontSize: hp('1.7%'),
+                                                                paddingLeft: 20,
+                                                            }}
+                                                        >
+                                                            {u.date}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </TouchableHighlight>
+                                    );
+                                })}
+                                {this.state.registered.map((u, i) => {
+                                    return (
+                                        <TouchableHighlight
+                                            onPress={() => {
+                                                this.setStatus(Status.RA);
+                                                this.setState({ picture: u.child.picture });
+                                                this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
+                                                this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
+                                                this.setState({ protocolStatusId: u.id });
+                                                this.setState({ modalControl: true, modalVisible: true });
+                                            }}
+                                        >
+                                            <View key={i} style={styles.cardContainer}>
+                                                <Avatar.Image source={{ uri: u.child.picture }} size={50} />
+                                                <Badge
+                                                    badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                                    status="success"
+                                                    containerStyle={{ position: 'absolute', top: 3, right: wp('18%') }}
+                                                />
+                                                <View style={{ flexDirection: 'column' }}>
+                                                    <Text
+                                                        style={{
+                                                            fontFamily: 'Roboto-Bold',
+                                                            fontSize: hp('2%'),
+                                                            paddingLeft: 20,
+                                                        }}
+                                                    >
+                                                        {u.child.fname + ' ' + u.child.lname}
+                                                    </Text>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text
+                                                            style={{
+                                                                fontFamily: 'Roboto-Bold',
+                                                                fontSize: hp('1.5%'),
+                                                                paddingLeft: 20,
+                                                            }}
+                                                        >
+                                                            ESTIMATE TIME
+												</Text>
+                                                        <Text
+                                                            style={{
+                                                                fontFamily: 'Roboto-Thin',
+                                                                fontSize: hp('1.7%'),
+                                                                paddingLeft: 20,
+                                                            }}
+                                                        >
+                                                            {u.eta}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </TouchableHighlight>
+                                    );
+                                })}
+                            </Card>
                         </View>
                     </View>
-                    <View style={styles.headerContainer}>
-                        <Card
-                            title="Coming"
-                            titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
-                        >
-                            {this.state.commingArrived.map((u, i) => {
-                                return (
-                                    <TouchableHighlight
-                                        onPress={() => {
-                                            this.setStatus(Status.CA);
-                                            this.setState({ picture: u.child.picture });
-                                            this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
-                                            this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
-                                            this.setState({ protocolStatusId: u.id });
-                                            this.setState({ modalControl: false, modalVisible: true });
-                                        }}
-                                    >
-                                        <View key={i} style={styles.cardContainer}>
-                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                            <Badge
-                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                                status="error"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 230 }}
-                                            />
-                                            <View style={{ flexDirection: 'column' }}>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('2%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.child.fname + ' ' + u.child.lname}
-                                                </Text>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Bold',
-                                                            fontSize: hp('1.5%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        ARRIVED
-													</Text>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Thin',
-                                                            fontSize: hp('1.7%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        {u.date}
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </TouchableHighlight>
-                                );
-                            })}
-                            {this.state.coming.map((u, i) => {
-                                return (
-                                    <View key={i} style={styles.cardContainer}>
-                                        <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                        <Badge
-                                            badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                            containerStyle={{ position: 'absolute', top: 3, right: 230 }}
-                                            status="warning"
-                                        />
-                                        <View style={{ flexDirection: 'column' }}>
-                                            <Text
-                                                style={{
-                                                    fontFamily: 'Roboto-Bold',
-                                                    fontSize: hp('2%'),
-                                                    paddingLeft: 20,
-                                                }}
-                                            >
-                                                {u.child.fname + ' ' + u.child.lname}
-                                            </Text>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('1.5%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    ESTIMATE TIME{' '}
-                                                </Text>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Thin',
-                                                        fontSize: hp('1.7%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.eta} MIN
-												</Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                        </Card>
-                        <Card
-                            title="In Process"
-                            titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
-                        >
-                            {this.state.process.map((u, i) => {
-                                return (
-                                    <View key={i} style={styles.cardContainer}>
-                                        <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                        <Badge
-                                            badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                            containerStyle={{ position: 'absolute', top: 3, right: 240 }}
-                                            status="warning"
-                                        />
-                                        <View style={{ flexDirection: 'column' }}>
-                                            <Text
-                                                style={{
-                                                    fontFamily: 'Roboto-Bold',
-                                                    fontSize: hp('2%'),
-                                                    paddingLeft: 20,
-                                                }}
-                                            >
-                                                {u.child.fname + ' ' + u.child.lname}
-                                            </Text>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('1.5%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    DROP OFF
-													</Text>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Thin',
-                                                        fontSize: hp('1.7%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.date}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                            {this.state.processPickup.map((u, i) => {
-                                return (
-                                    <View key={i} style={styles.cardContainer}>
-                                        <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                        <Badge
-                                            badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                            status="warning"
-                                            containerStyle={{ position: 'absolute', top: 3, right: 240 }}
-                                        />
-                                        <View style={{ flexDirection: 'column' }}>
-                                            <Text
-                                                style={{
-                                                    fontFamily: 'Roboto-Bold',
-                                                    fontSize: hp('2%'),
-                                                    paddingLeft: 20,
-                                                }}
-                                            >
-                                                {u.child.fname + ' ' + u.child.lname}
-                                            </Text>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('1.5%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    PICK UP
-												</Text>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Thin',
-                                                        fontSize: hp('1.7%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.date}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                        </Card>
-                        <Card
-                            title="Registered"
-                            titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
-                        >
-                            {this.state.registeredArrived.map((u, i) => {
-                                return (
-                                    <TouchableHighlight
-                                        onPress={() => {
-                                            this.setStatus(Status.RA);
-                                            this.setState({ picture: u.child.picture });
-                                            this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
-                                            this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
-                                            this.setState({ protocolStatusId: u.id });
-                                            this.setState({ modalControl: true, modalVisible: true });
-                                        }}
-                                    >
-                                        <View key={i} style={styles.cardContainer}>
-                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                            <Badge
-                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                                status="success"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 230 }}
-                                            />
-                                            <View style={{ flexDirection: 'column' }}>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('2%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.child.fname + ' ' + u.child.lname}
-                                                </Text>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Bold',
-                                                            fontSize: hp('1.5%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        ARRIVED
-												</Text>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Thin',
-                                                            fontSize: hp('1.7%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        {u.date}
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </TouchableHighlight>
-                                );
-                            })}
-                            {this.state.registered.map((u, i) => {
-                                return (
-                                    <TouchableHighlight
-                                        onPress={() => {
-                                            this.setStatus(Status.RA);
-                                            this.setState({ picture: u.child.picture });
-                                            this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
-                                            this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
-                                            this.setState({ protocolStatusId: u.id });
-                                            this.setState({ modalControl: true, modalVisible: true });
-                                        }}
-                                    >
-                                        <View key={i} style={styles.cardContainer}>
-                                            <Avatar.Image source={{ uri: u.child.picture }} size={50} />
-                                            <Badge
-                                                badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                                status="success"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 230 }}
-                                            />
-                                            <View style={{ flexDirection: 'column' }}>
-                                                <Text
-                                                    style={{
-                                                        fontFamily: 'Roboto-Bold',
-                                                        fontSize: hp('2%'),
-                                                        paddingLeft: 20,
-                                                    }}
-                                                >
-                                                    {u.child.fname + ' ' + u.child.lname}
-                                                </Text>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Bold',
-                                                            fontSize: hp('1.5%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        ESTIMATE TIME
-												</Text>
-                                                    <Text
-                                                        style={{
-                                                            fontFamily: 'Roboto-Thin',
-                                                            fontSize: hp('1.7%'),
-                                                            paddingLeft: 20,
-                                                        }}
-                                                    >
-                                                        {u.eta}
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </TouchableHighlight>
-                                );
-                            })}
-                        </Card>
-                    </View>
-                </View>
-                <Overlay
-                    overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('80%'), height: hp('70%') }}
-                    isVisible={this.state.modalSignature}
-                    onBackdropPress={toggleOverlay}
-                >
-                    <View style={styles.containerSignature}>
+                    <Overlay
+                        overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('80%'), height: hp('70%') }}
+                        isVisible={this.state.modalSignature}
+                        onBackdropPress={toggleOverlay}
+                    >
                         <View style={styles.containerSignature}>
-                            <View style={styles.sketchContainer}>
-                                <ExpoPixi.Sketch
-                                    ref={ref => (this.sketch = ref)}
-                                    style={styles.sketch}
-                                    strokeColor={this.state.strokeColor}
-                                    strokeWidth={2}
-                                    strokeAlpha={1}
-                                    onChange={this.onChangeAsync}
-                                    onReady={this.onReady}
-                                    initialLines={this.state.lines}
-                                />
-                                <View style={styles.label}>
-                                    <Text>Canvas - draw here</Text>
+                            <View style={styles.containerSignature}>
+                                <View style={styles.sketchContainer}>
+                                    <ExpoPixi.Sketch
+                                        ref={ref => (this.sketch = ref)}
+                                        style={styles.sketch}
+                                        strokeColor={this.state.strokeColor}
+                                        strokeWidth={2}
+                                        strokeAlpha={1}
+                                        onChange={this.onChangeAsync}
+                                        onReady={this.onReady}
+                                        initialLines={this.state.lines}
+                                    />
+                                    <View style={styles.label}>
+                                        <Text>Canvas - draw here</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.imageContainer}>
+                                    <View style={styles.label}>
+                                        <Text>Snapshot</Text>
+                                    </View>
+                                    <Image style={styles.image} source={this.state.image} />
                                 </View>
                             </View>
-                            <View style={styles.imageContainer}>
-                                <View style={styles.label}>
-                                    <Text>Snapshot</Text>
-                                </View>
-                                <Image style={styles.image} source={this.state.image} />
-                            </View>
+                            <Button
+                                color={'blue'}
+                                title="undo"
+                                style={styles.button}
+                                onPress={() => {
+                                    this.sketch.undo();
+                                }}
+                            />
                         </View>
-                        <Button
-                            color={'blue'}
-                            title="undo"
-                            style={styles.button}
-                            onPress={() => {
-                                this.sketch.undo();
-                            }}
-                        />
-                    </View>
-                </Overlay>
-                <Overlay
-                    overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('80%'), height: hp('70%') }}
-                    isVisible={this.state.modalVisible}
-                    onBackdropPress={toggleOverlay}
-                >
-                    <View style={{ flexDirection: 'column', alignItems: 'center', alignContent: 'center' }}>
-                        {this.state.modalControl == false && (
-                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>
-                                Input Protocol
-                            </Text>
-                        )}
-                        {this.state.modalControl == true && (
-                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>
-                                Register Details
-                            </Text>
-                        )}
-                    </View>
-                    <View style={{ flex: 1, flexDirection: 'row', marginLeft: wp('5%') }}>
-                        <View
-                            style={{
-                                width: wp('30%'),
-                                height: hp('80%'),
-                                paddingTop: 40,
-                            }}
-                        >
+                    </Overlay>
+                    <Overlay
+                        overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('80%'), height: hp('70%') }}
+                        isVisible={this.state.modalVisible}
+                        onBackdropPress={toggleOverlay}
+                    >
+                        <View style={{ flexDirection: 'column', alignItems: 'center', alignContent: 'center' }}>
+                            {this.state.modalControl == false && (
+                                <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>
+                                    Input Protocol
+                                </Text>
+                            )}
+                            {this.state.modalControl == true && (
+                                <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('3%'), color: 'gray' }}>
+                                    Register Details
+                                </Text>
+                            )}
+                        </View>
+                        <View style={{ flex: 1, flexDirection: 'row', marginLeft: wp('5%') }}>
                             <View
                                 style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
+                                    width: wp('30%'),
+                                    height: hp('80%'),
+                                    paddingTop: 40,
                                 }}
                             >
-                                <Avatar.Image source={{ uri: this.state.picture }} size={70} />
-                                <Text
+                                <View
                                     style={{
-                                        fontSize: hp('3.5%'),
-                                        fontFamily: 'Roboto-Bold',
-                                        paddingLeft: 20,
-                                        paddingTop: 10,
+                                        flexDirection: 'row',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
                                     }}
                                 >
-                                    {this.state.nameChild}{' '}
-                                </Text>
-                            </View>
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    marginTop: hp('3%'),
-                                }}
-                            >
-                                <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}>
-                                    Parent:{' '}
-                                </Text>
-                                <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Bold' }}>
-                                    {this.state.nameParent}{' '}
-                                </Text>
-                            </View>
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}>
-                                    Received by:{' '}
-                                </Text>
-                                <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Bold' }}>
-                                    {this.state.first_name + ' ' + this.state.last_name}
-                                </Text>
-                            </View>
-                        </View>
-                        <View
-                            style={{
-                                marginTop: hp('5%'),
-                                marginLeft: wp('3%'),
-                                width: wp('0.5%'),
-                                height: hp('50%'),
-                                backgroundColor: '#399998',
-                            }}
-                        ></View>
-                        <View
-                            style={{
-                                marginTop: hp('1%'),
-                                width: wp('30%'),
-                                height: hp('50%'),
-                            }}
-                        >
-                            <View
-                                style={{
-                                    width: '90%',
-                                    height: '70%',
-                                    marginTop: hp('4%'),
-                                    marginLeft: wp('5%'),
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: '#399998',
-                                }}
-                            >
-                                {items}
-                            </View>
-                            <View
-                                style={{
-                                    width: '90%',
-                                    height: '15%',
-                                    marginTop: hp('2%'),
-                                    marginLeft: wp('5%'),
-                                    alignItems: 'center',
-                                    borderWidth: 1,
-                                    borderColor: '#399998',
-                                    borderRadius: 5,
-                                }}
-                            >
-                                <Input
-                                    placeholder="Notes"
-                                    onChangeText={(value) => this.setState({ notes: value })}
-                                ></Input>
-                            </View>
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    width: '60%',
-                                    height: '10%',
-                                    marginTop: hp('2%'),
-                                    marginLeft: wp('7%'),
-                                    alignItems: 'center',
-                                }}
-                            >
-                                {this.state.modalControl == false && (
-                                    <>
-                                        <TouchableOpacity
-                                            onPress={() => this.setState({ modalSignature: true })}
-                                            style={{
-                                                width: wp('7%'),
-                                                backgroundColor: '#399998',
-                                                alignItems: 'center',
-                                                marginRight: wp('1%'),
-                                                borderRadius: 7,
-                                            }}
-                                        >
-                                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
-                                                Signature
-									</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => alert('Cancel')}
-                                            style={{
-                                                width: wp('7%'),
-                                                backgroundColor: '#399998',
-                                                alignItems: 'center',
-                                                marginRight: wp('1%'),
-                                                borderRadius: 7,
-                                            }}
-                                        >
-                                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
-                                                Cancel
-									</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() =>
-                                                this.sendDetailsAnswers(), toggleOverlay
-                                            }
-                                            style={{
-                                                width: wp('7%'),
-                                                backgroundColor: '#399998',
-                                                alignItems: 'center',
-                                                borderRadius: 7,
-                                            }}
-                                        >
-                                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
-                                                Save
-									</Text>
-                                        </TouchableOpacity>
-                                    </>
-                                )}
-                                {this.state.modalControl == true && (
-                                    <TouchableOpacity
-                                        onPress={toggleOverlay}
+                                    <Avatar.Image source={{ uri: this.state.picture }} size={70} />
+                                    <Text
                                         style={{
-                                            width: wp('7%'),
-                                            backgroundColor: '#399998',
-                                            alignItems: 'center',
-                                            borderRadius: 7,
+                                            fontSize: hp('3.5%'),
+                                            fontFamily: 'Roboto-Bold',
+                                            paddingLeft: 20,
+                                            paddingTop: 10,
                                         }}
                                     >
-                                        <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
-                                            Go Back
+                                        {this.state.nameChild}{' '}
+                                    </Text>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        marginTop: hp('3%'),
+                                    }}
+                                >
+                                    <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}>
+                                        Parent:{' '}
+                                    </Text>
+                                    <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Bold' }}>
+                                        {this.state.nameParent}{' '}
+                                    </Text>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}>
+                                        Received by:{' '}
+                                    </Text>
+                                    <Text style={{ fontSize: hp('3%'), fontFamily: 'Roboto-Bold' }}>
+                                        {this.state.first_name + ' ' + this.state.last_name}
+                                    </Text>
+                                </View>
+                            </View>
+                            <View
+                                style={{
+                                    marginTop: hp('5%'),
+                                    marginLeft: wp('3%'),
+                                    width: wp('0.5%'),
+                                    height: hp('50%'),
+                                    backgroundColor: '#399998',
+                                }}
+                            ></View>
+                            <View
+                                style={{
+                                    marginTop: hp('1%'),
+                                    width: wp('30%'),
+                                    height: hp('50%'),
+                                }}
+                            >
+                                <View
+                                    style={{
+                                        width: '90%',
+                                        height: '70%',
+                                        marginTop: hp('4%'),
+                                        marginLeft: wp('5%'),
+                                        alignItems: 'center',
+                                        borderWidth: 1,
+                                        borderColor: '#399998',
+                                    }}
+                                >
+                                    {items}
+                                </View>
+                                <View
+                                    style={{
+                                        width: '90%',
+                                        height: '15%',
+                                        marginTop: hp('2%'),
+                                        marginLeft: wp('5%'),
+                                        alignItems: 'center',
+                                        borderWidth: 1,
+                                        borderColor: '#399998',
+                                        borderRadius: 5,
+                                    }}
+                                >
+                                    <Input
+                                        placeholder="Notes"
+                                        onChangeText={(value) => this.setState({ notes: value })}
+                                    ></Input>
+                                </View>
+                                <View
+                                    style={{
+                                        flexDirection: 'row',
+                                        width: '60%',
+                                        height: '10%',
+                                        marginTop: hp('2%'),
+                                        marginLeft: wp('7%'),
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    {this.state.modalControl == false && (
+                                        <>
+                                            <TouchableOpacity
+                                                onPress={() => this.setState({ modalSignature: true })}
+                                                style={{
+                                                    width: wp('7%'),
+                                                    backgroundColor: '#399998',
+                                                    alignItems: 'center',
+                                                    marginRight: wp('1%'),
+                                                    borderRadius: 7,
+                                                }}
+                                            >
+                                                <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                                    Signature
+									</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                onPress={() => alert('Cancel')}
+                                                style={{
+                                                    width: wp('7%'),
+                                                    backgroundColor: '#399998',
+                                                    alignItems: 'center',
+                                                    marginRight: wp('1%'),
+                                                    borderRadius: 7,
+                                                }}
+                                            >
+                                                <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                                    Cancel
+									</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                onPress={() =>
+                                                    this.sendDetailsAnswers(), toggleOverlay
+                                                }
+                                                style={{
+                                                    width: wp('7%'),
+                                                    backgroundColor: '#399998',
+                                                    alignItems: 'center',
+                                                    borderRadius: 7,
+                                                }}
+                                            >
+                                                <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                                    Save
+									</Text>
+                                            </TouchableOpacity>
+                                        </>
+                                    )}
+                                    {this.state.modalControl == true && (
+                                        <TouchableOpacity
+                                            onPress={toggleOverlay}
+                                            style={{
+                                                width: wp('7%'),
+                                                backgroundColor: '#399998',
+                                                alignItems: 'center',
+                                                borderRadius: 7,
+                                            }}
+                                        >
+                                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                                Go Back
                                         </Text>
-                                    </TouchableOpacity>
-                                )}
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </Overlay>
-            </ScrollView>
-        );
+                    </Overlay>
+                </ScrollView>
+            );
+        } else {
+            return (
+                <AppLoading />
+            )
+        }
     }
 }
 
@@ -994,27 +1000,27 @@ const styles = StyleSheet.create({
     //Siganture
     containerSignature: {
         flex: 1,
-      },
-      sketch: {
+    },
+    sketch: {
         flex: 1,
-      },
-      sketchContainer: {
+    },
+    sketchContainer: {
         height: '50%',
-      },
-      image: {
+    },
+    image: {
         flex: 1,
-      },
-      imageContainer: {
+    },
+    imageContainer: {
         height: '50%',
         borderTopWidth: 4,
         borderTopColor: '#E44262',
-      },
-      label: {
+    },
+    label: {
         width: '100%',
         padding: 5,
         alignItems: 'center',
-      },
-      button: {
+    },
+    button: {
         // position: 'absolute',
         // bottom: 8,
         // left: 8,
@@ -1022,5 +1028,5 @@ const styles = StyleSheet.create({
         padding: 12,
         minWidth: 56,
         minHeight: 48,
-      },
+    },
 });
