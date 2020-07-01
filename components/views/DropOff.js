@@ -382,8 +382,8 @@ export class DropOff extends Component {
                 <View style={styles.container}>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <View style={styles.headerContainer}>
-                            <Icon name="home" size={hp('13%')} color="gray" />
-                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('10.331%'), color: 'gray' }}>
+                            <Icon name="home" size={hp('6.5%')} color="gray" />
+                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('5%'), color: 'gray' }}>
                                 Outcoming Dashboard
 							</Text>
                         </View>
@@ -410,7 +410,7 @@ export class DropOff extends Component {
                                             <Badge
                                                 badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                                 status="error"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 230 }}
                                             />
                                             <View style={{ flexDirection: 'column' }}>
                                                 <Text
@@ -453,7 +453,7 @@ export class DropOff extends Component {
                                         <Avatar.Image source={{ uri: u.child.picture }} size={50} />
                                         <Badge
                                             badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                            containerStyle={{ position: 'absolute', top: 3, right: 230 }}
                                             status="warning"
                                         />
                                         <View style={{ flexDirection: 'column' }}>
@@ -502,7 +502,7 @@ export class DropOff extends Component {
                                         <Badge
                                             badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                             status="warning"
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                            containerStyle={{ position: 'absolute', top: 3, right: 240 }}
                                         />
                                         <View style={{ flexDirection: 'column' }}>
                                             <Text
@@ -545,7 +545,7 @@ export class DropOff extends Component {
                                         <Badge
                                             badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                             status="warning"
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                            containerStyle={{ position: 'absolute', top: 3, right: 240 }}
                                         />
                                         <View style={{ flexDirection: 'column' }}>
                                             <Text
@@ -603,7 +603,7 @@ export class DropOff extends Component {
                                             <Badge
                                                 badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                                 status="success"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 220 }}
                                             />
                                             <View style={{ flexDirection: 'column' }}>
                                                 <Text
@@ -657,7 +657,7 @@ export class DropOff extends Component {
                                             <Badge
                                                 badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                                 status="success"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 220 }}
                                             />
                                             <View style={{ flexDirection: 'column' }}>
                                                 <Text
@@ -893,7 +893,7 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         flexDirection: 'row',
-        paddingTop: 60
+        paddingTop: 20
     },
     cardContainer: {
         flexDirection: 'row',

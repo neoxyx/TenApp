@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Image, ImageBackground, Text, ScrollView } from 'react-native';
+import React, { Component, useState, useEffect } from 'react';
+import { View, StyleSheet, Image, ImageBackground, Text, ScrollView, Dimensions } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Link } from '../../react-router.native';
@@ -8,18 +8,19 @@ import {
 	heightPercentageToDP as hp,
 	widthPercentageToDP as wp
 } from 'react-native-responsive-screen';
-
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 let customFonts = {
 	'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
 	'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
 	'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
 	'Roboto-Bold': require('../../assets/fonts/Roboto-Bold.ttf'),
 }
-
 export default class CheckMethod extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			orientation: '',
 			fontsLoaded: false
 		}
 	}
@@ -62,7 +63,6 @@ export default class CheckMethod extends Component {
 		}
 	}
 }
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

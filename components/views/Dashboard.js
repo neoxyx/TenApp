@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage, Alert, ScrollView, Switch, TouchableHighlight, TouchableOpacity } from 'react-native';
+import Expo from 'expo';
+import * as ExpoPixi from 'expo-pixi';
+import { Image, Button, Platform, AppState, View, StyleSheet, AsyncStorage, Alert, ScrollView, Switch, TouchableHighlight, TouchableOpacity } from 'react-native';
 import * as Font from 'expo-font';
 import { Card, Icon, Text, Badge, Overlay, Input } from 'react-native-elements';
 import Api from '../../constans/Api';
@@ -7,6 +9,14 @@ import Status from '../../constans/Status';
 import { Avatar } from 'react-native-paper';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
+const isAndroid = Platform.OS === 'android';
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (Math.random() * 16) | 0,
+            v = c == 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
 let customFonts = {
     'Roboto-Black': require('../../assets/fonts/Roboto-Black.ttf'),
     'Roboto-Light': require('../../assets/fonts/Roboto-Light.ttf'),
@@ -18,6 +28,19 @@ export class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            image: null,
+            //strokeColor: Math.random() * 0xffffff,
+            strokeColor: 0x3B83BD,
+            //strokeWidth: Math.random() * 30 + 10,
+            lines: [
+                {
+                    points: [{ x: 300, y: 300 }, { x: 600, y: 300 }, { x: 450, y: 600 }, { x: 300, y: 300 }],
+                    color: 0xff00ff,
+                    alpha: 1,
+                    width: 10,
+                },
+            ],
+            appState: AppState.currentState,
             first_name: '',
             last_name: '',
             idUser: '',
@@ -31,6 +54,7 @@ export class Dashboard extends Component {
             selectedValue: '',
             modalVisible: false,
             modalControl: false,
+            modalSignature: false,
             picture: '',
             nameChild: '',
             nameParent: '',
@@ -43,6 +67,15 @@ export class Dashboard extends Component {
             details: [],
         };
     }
+    handleAppStateChangeAsync = nextAppState => {
+        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+            if (isAndroid && this.sketch) {
+                this.setState({ appState: nextAppState, id: uuidv4(), lines: this.sketch.lines });
+                return;
+            }
+        }
+        this.setState({ appState: nextAppState });
+    };
     async _loadFontAsync() {
         await Font.loadAsync(customFonts);
         this.setState({ fontsLoaded: true });
@@ -267,6 +300,7 @@ export class Dashboard extends Component {
     }
 
     componentDidMount() {
+        AppState.addEventListener('change', this.handleAppStateChangeAsync);
         this._loadFontAsync();
         this.getMeData();
         this.getComingArrived();
@@ -276,9 +310,23 @@ export class Dashboard extends Component {
         this.getRegistered();
         this.getRegisteredArrived();
     }
+    componentWillUnmount() {
+        AppState.addEventListener('change', this.handleAppStateChangeAsync);
+    }
+    onChangeAsync = async () => {
+        const { uri } = await this.sketch.takeSnapshotAsync();
+        this.setState({
+            image: { uri },
+            strokeWidth: Math.random() * 30 + 10,
+            strokeColor: Math.random() * 0xffffff,
+        });
+    };
+    onReady = () => {
+        console.log('ready!');
+    };
     render() {
         const toggleOverlay = () => {
-            this.setState({ modalVisible: false });
+            this.setState({ modalVisible: false, modalSignature: false });
         };
         const setProtocolDetailAnswerValue = (index, value) => {
             const newProtocolDetails = this.state.details.map((pd, i) => {
@@ -286,14 +334,6 @@ export class Dashboard extends Component {
                 return pd;
             });
             this.setState({ details: newProtocolDetails });
-        };
-        const setTimeValue = (index, value, valueToSet, op = 'm') => {
-            const time = value.split(':');
-            const [h, m] = time;
-            let val;
-            if (op === 'm') val = `${h}:${valueToSet}`;
-            else val = `${valueToSet}:${m}`;
-            setProtocolDetailAnswerValue(index, val);
         };
         const items = this.state.details.map((item, j) => {
             const { value: Value } = item;
@@ -316,13 +356,12 @@ export class Dashboard extends Component {
                                 style={{
                                     fontFamily: 'Roboto-Bold',
                                     fontSize: hp('2%'),
-                                    marginLeft: 20,
-                                    marginRight: 65,
+                                    marginLeft: 40
                                 }}
                             >
                                 {item.activity_name}
                             </Text>
-                            <Switch value={Value} onValueChange={(value) => setProtocolDetailAnswerValue(j, value)} />
+                            <Switch style={{ marginLeft: 90 }} value={Value} onValueChange={(value) => setProtocolDetailAnswerValue(j, value)} />
                         </>
                     )}
 
@@ -332,15 +371,14 @@ export class Dashboard extends Component {
                                 style={{
                                     fontFamily: 'Roboto-Bold',
                                     fontSize: hp('2%'),
-                                    marginLeft: 30,
-                                    marginRight: 65,
+                                    marginLeft: 50
                                 }}
                             >
                                 {item.activity_name}
                             </Text>
                             <Input
                                 value={Value}
-                                containerStyle={{ width: wp('5%'), marginTop: hp('2%') }}
+                                containerStyle={{ marginLeft: 80, width: wp('5%'), marginTop: hp('2%') }}
                                 onChangeText={(value) => setProtocolDetailAnswerValue(j, value)}
                             ></Input>
                         </>
@@ -351,24 +389,16 @@ export class Dashboard extends Component {
                                 style={{
                                     fontFamily: 'Roboto-Bold',
                                     fontSize: hp('2%'),
-                                    marginLeft: 20,
-                                    marginRight: 85,
+                                    marginLeft: 40
                                 }}
                             >
                                 {item.activity_name}
                             </Text>
                             <Input
                                 value={Value}
-                                placeholder="07"
-                                containerStyle={{ width: wp('4%'), marginTop: hp('2%') }}
-                                onChangeText={(hour) => setTimeValue(j, Value, hour, 'h')}
-                            ></Input>
-                            <Text>:</Text>
-                            <Input
-                                value={Value}
-                                placeholder="23"
-                                containerStyle={{ width: wp('4%'), marginTop: hp('2%') }}
-                                onChangeText={(min) => setTimeValue(j, Value, min, 'm')}
+                                placeholder="14:00"
+                                containerStyle={{ marginLeft: 150, width: wp('5%'), marginTop: hp('2%') }}
+                                onChangeText={(value) => setProtocolDetailAnswerValue(j, value)}
                             ></Input>
                         </>
                     )}
@@ -380,8 +410,8 @@ export class Dashboard extends Component {
                 <View style={styles.container}>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <View style={styles.headerContainer}>
-                            <Icon name="home" size={hp('13%')} color="gray" />
-                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('10.331%'), color: 'gray' }}>
+                            <Icon name="home" size={hp('6.5%')} color="gray" />
+                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('5%'), color: 'gray' }}>
                                 Incoming Dashboard
 							</Text>
                         </View>
@@ -389,7 +419,7 @@ export class Dashboard extends Component {
                     <View style={styles.headerContainer}>
                         <Card
                             title="Coming"
-                            titleStyle={{ fontSize: hp('3.5%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                            titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                         >
                             {this.state.commingArrived.map((u, i) => {
                                 return (
@@ -408,7 +438,7 @@ export class Dashboard extends Component {
                                             <Badge
                                                 badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                                 status="error"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 230 }}
                                             />
                                             <View style={{ flexDirection: 'column' }}>
                                                 <Text
@@ -451,7 +481,7 @@ export class Dashboard extends Component {
                                         <Avatar.Image source={{ uri: u.child.picture }} size={50} />
                                         <Badge
                                             badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                            containerStyle={{ position: 'absolute', top: 3, right: 230 }}
                                             status="warning"
                                         />
                                         <View style={{ flexDirection: 'column' }}>
@@ -491,7 +521,7 @@ export class Dashboard extends Component {
                         </Card>
                         <Card
                             title="In Process"
-                            titleStyle={{ fontSize: hp('3.5%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                            titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                         >
                             {this.state.process.map((u, i) => {
                                 return (
@@ -499,8 +529,8 @@ export class Dashboard extends Component {
                                         <Avatar.Image source={{ uri: u.child.picture }} size={50} />
                                         <Badge
                                             badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
+                                            containerStyle={{ position: 'absolute', top: 3, right: 240 }}
                                             status="warning"
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
                                         />
                                         <View style={{ flexDirection: 'column' }}>
                                             <Text
@@ -543,7 +573,7 @@ export class Dashboard extends Component {
                                         <Badge
                                             badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                             status="warning"
-                                            containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                            containerStyle={{ position: 'absolute', top: 3, right: 240 }}
                                         />
                                         <View style={{ flexDirection: 'column' }}>
                                             <Text
@@ -582,7 +612,7 @@ export class Dashboard extends Component {
                         </Card>
                         <Card
                             title="Registered"
-                            titleStyle={{ fontSize: hp('3.5%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                            titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                         >
                             {this.state.registeredArrived.map((u, i) => {
                                 return (
@@ -601,7 +631,7 @@ export class Dashboard extends Component {
                                             <Badge
                                                 badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                                 status="success"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 230 }}
                                             />
                                             <View style={{ flexDirection: 'column' }}>
                                                 <Text
@@ -655,7 +685,7 @@ export class Dashboard extends Component {
                                             <Badge
                                                 badgeStyle={{ width: 20, height: 20, borderRadius: 20 }}
                                                 status="success"
-                                                containerStyle={{ position: 'absolute', top: 3, right: 260 }}
+                                                containerStyle={{ position: 'absolute', top: 3, right: 230 }}
                                             />
                                             <View style={{ flexDirection: 'column' }}>
                                                 <Text
@@ -695,6 +725,45 @@ export class Dashboard extends Component {
                         </Card>
                     </View>
                 </View>
+                <Overlay
+                    overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('80%'), height: hp('70%') }}
+                    isVisible={this.state.modalSignature}
+                    onBackdropPress={toggleOverlay}
+                >
+                    <View style={styles.containerSignature}>
+                        <View style={styles.containerSignature}>
+                            <View style={styles.sketchContainer}>
+                                <ExpoPixi.Sketch
+                                    ref={ref => (this.sketch = ref)}
+                                    style={styles.sketch}
+                                    strokeColor={this.state.strokeColor}
+                                    strokeWidth={2}
+                                    strokeAlpha={1}
+                                    onChange={this.onChangeAsync}
+                                    onReady={this.onReady}
+                                    initialLines={this.state.lines}
+                                />
+                                <View style={styles.label}>
+                                    <Text>Canvas - draw here</Text>
+                                </View>
+                            </View>
+                            <View style={styles.imageContainer}>
+                                <View style={styles.label}>
+                                    <Text>Snapshot</Text>
+                                </View>
+                                <Image style={styles.image} source={this.state.image} />
+                            </View>
+                        </View>
+                        <Button
+                            color={'blue'}
+                            title="undo"
+                            style={styles.button}
+                            onPress={() => {
+                                this.sketch.undo();
+                            }}
+                        />
+                    </View>
+                </Overlay>
                 <Overlay
                     overlayStyle={{ borderWidth: 3, borderColor: '#399998', width: wp('80%'), height: hp('70%') }}
                     isVisible={this.state.modalVisible}
@@ -821,12 +890,26 @@ export class Dashboard extends Component {
                                     width: '60%',
                                     height: '10%',
                                     marginTop: hp('2%'),
-                                    marginLeft: wp('8%'),
+                                    marginLeft: wp('7%'),
                                     alignItems: 'center',
                                 }}
                             >
                                 {this.state.modalControl == false && (
                                     <>
+                                        <TouchableOpacity
+                                            onPress={() => this.setState({ modalSignature: true })}
+                                            style={{
+                                                width: wp('7%'),
+                                                backgroundColor: '#399998',
+                                                alignItems: 'center',
+                                                marginRight: wp('1%'),
+                                                borderRadius: 7,
+                                            }}
+                                        >
+                                            <Text style={{ fontFamily: 'Roboto-Regular', fontSize: hp('2%'), color: '#fff' }}>
+                                                Signature
+									</Text>
+                                        </TouchableOpacity>
                                         <TouchableOpacity
                                             onPress={() => alert('Cancel')}
                                             style={{
@@ -890,7 +973,7 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         flexDirection: 'row',
-        paddingTop: 60,
+        paddingTop: 20,
     },
     cardContainer: {
         flexDirection: 'row',
@@ -908,4 +991,36 @@ const styles = StyleSheet.create({
         color: 'gray',
         fontFamily: 'Roboto-Regular',
     },
+    //Siganture
+    containerSignature: {
+        flex: 1,
+      },
+      sketch: {
+        flex: 1,
+      },
+      sketchContainer: {
+        height: '50%',
+      },
+      image: {
+        flex: 1,
+      },
+      imageContainer: {
+        height: '50%',
+        borderTopWidth: 4,
+        borderTopColor: '#E44262',
+      },
+      label: {
+        width: '100%',
+        padding: 5,
+        alignItems: 'center',
+      },
+      button: {
+        // position: 'absolute',
+        // bottom: 8,
+        // left: 8,
+        zIndex: 1,
+        padding: 12,
+        minWidth: 56,
+        minHeight: 48,
+      },
 });
