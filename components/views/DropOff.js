@@ -393,6 +393,7 @@ export class DropOff extends Component {
                         </View>
                         <View style={styles.headerContainer}>
                             <Card
+                                containerStyle={styles.card}
                                 title="Coming"
                                 titleStyle={{ fontSize: hp('3.5%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                             >
@@ -495,6 +496,7 @@ export class DropOff extends Component {
                                 })}
                             </Card>
                             <Card
+                                containerStyle={{ width: wp('26%') }}
                                 title="In Process"
                                 titleStyle={{ fontSize: hp('3.5%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                             >
@@ -586,6 +588,7 @@ export class DropOff extends Component {
                                 })}
                             </Card>
                             <Card
+                                containerStyle={{ width: wp('24%') }}
                                 title="Dropped Off"
                                 titleStyle={{ fontSize: hp('3.5%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                             >
@@ -918,5 +921,8 @@ const styles = StyleSheet.create({
     textGray: {
         color: 'gray',
         fontFamily: 'Roboto-Regular'
+    },
+    card: {
+        width: wp('25%')
     }
 });

@@ -419,14 +419,15 @@ export class Dashboard extends Component {
                         </View>
                         <View style={styles.headerContainer}>
                             <Card
+                                containerStyle={styles.card}
                                 title="Coming"
-                                titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                                titleStyle={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                             >
                                 {this.state.commingArrived.map((u, i) => {
                                     return (
                                         <TouchableHighlight
                                             onPress={() => {
-                                                this.setStatus(Status.CA);
+                                                this.setStatus(Status.IP);
                                                 this.setState({ picture: u.child.picture });
                                                 this.setState({ nameChild: u.child.fname + ' ' + u.child.lname });
                                                 this.setState({ nameParent: u.parent.fname + ' ' + u.parent.lname });
@@ -521,8 +522,9 @@ export class Dashboard extends Component {
                                 })}
                             </Card>
                             <Card
+                                containerStyle={{width:wp('26%')}}
                                 title="In Process"
-                                titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                                titleStyle={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                             >
                                 {this.state.process.map((u, i) => {
                                     return (
@@ -612,8 +614,9 @@ export class Dashboard extends Component {
                                 })}
                             </Card>
                             <Card
+                                containerStyle={styles.card}
                                 title="Registered"
-                                titleStyle={{ fontSize: hp('2%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
+                                titleStyle={{ fontSize: hp('3%'), fontFamily: 'Roboto-Regular', color: 'gray' }}
                             >
                                 {this.state.registeredArrived.map((u, i) => {
                                     return (
@@ -996,6 +999,9 @@ const styles = StyleSheet.create({
     textGray: {
         color: 'gray',
         fontFamily: 'Roboto-Regular',
+    },
+    card: {
+        width: wp('25%')
     },
     //Siganture
     containerSignature: {
